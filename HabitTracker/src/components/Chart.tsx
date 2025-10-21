@@ -11,6 +11,7 @@ const Chart = () => {
         frontColor="skyblue"
         yAxisThickness={0}
         xAxisThickness={0}
+        hideRules
       />
     </>
   );
