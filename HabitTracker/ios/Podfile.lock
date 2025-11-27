@@ -1838,8 +1838,6 @@ PODS:
     - SocketRocket
     - Yoga
   - react-native-vector-icons-fontawesome (12.3.0)
-  - react-native-vector-icons-fontawesome5 (12.2.0)
-  - react-native-vector-icons-fontawesome6 (12.2.0)
   - react-native-vector-icons-material-design-icons (12.3.0)
   - React-NativeModulesApple (0.81.1):
     - boost
@@ -2510,8 +2508,6 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-vector-icons-fontawesome (from `../node_modules/@react-native-vector-icons/fontawesome`)"
-  - "react-native-vector-icons-fontawesome5 (from `../node_modules/@react-native-vector-icons/fontawesome5`)"
-  - "react-native-vector-icons-fontawesome6 (from `../node_modules/@react-native-vector-icons/fontawesome6`)"
   - "react-native-vector-icons-material-design-icons (from `../node_modules/@react-native-vector-icons/material-design-icons`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -2640,10 +2636,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-vector-icons-fontawesome:
     :path: "../node_modules/@react-native-vector-icons/fontawesome"
-  react-native-vector-icons-fontawesome5:
-    :path: "../node_modules/@react-native-vector-icons/fontawesome5"
-  react-native-vector-icons-fontawesome6:
-    :path: "../node_modules/@react-native-vector-icons/fontawesome6"
   react-native-vector-icons-material-design-icons:
     :path: "../node_modules/@react-native-vector-icons/material-design-icons"
   React-NativeModulesApple:
@@ -2757,8 +2749,6 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 1ead4fe154df3b1ba34b5a9e35ef3c4bdfa72ccb
   react-native-safe-area-context: c6e2edd1c1da07bdce287fa9d9e60c5f7b514616
   react-native-vector-icons-fontawesome: c41fd08991989b71fe79c68ebb3ee30ac221178e
-  react-native-vector-icons-fontawesome5: 1199fa2cf3323fac0b9b52b2aecb1329aa3602a5
-  react-native-vector-icons-fontawesome6: 1b667969bef2f430d1d7515163b980b856f58670
   react-native-vector-icons-material-design-icons: c502df5b988ce85d6c7d2b7ee909818315760b82
   React-NativeModulesApple: eff2eba56030eb0d107b1642b8f853bc36a833ac
   React-oscompat: b12c633e9c00f1f99467b1e0e0b8038895dae436

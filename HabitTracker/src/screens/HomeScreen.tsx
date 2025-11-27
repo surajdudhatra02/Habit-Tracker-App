@@ -5,8 +5,7 @@ import { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { Button, Chart, SuccessRate } from '../components';
-
+import { Button, HomeBarChart, SuccessRate } from '../components';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -14,10 +13,12 @@ type Props = CompositeScreenProps<
 >;
 
 const HomeScreen = ({ navigation }: Props) => {
-  const addIcon = <MaterialDesignIcons name="plus-circle-outline" size={18} color={'white'} />
+  const addIcon = (
+    <MaterialDesignIcons name="plus-circle-outline" size={18} color={'white'} />
+  );
 
   return (
-    <ScrollView 
+    <ScrollView
       className="flex-1 bg-dark_bg"
       showsVerticalScrollIndicator={false}
       bounces={true}
@@ -27,7 +28,9 @@ const HomeScreen = ({ navigation }: Props) => {
       <View className="p-6">
         {/* Header Section */}
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-green mb-2">Home, User !!</Text>
+          <Text className="text-3xl font-bold text-green mb-2">
+            Home, User !!
+          </Text>
           <Text className="text-grey_text text-base">
             You're on a roll! Keep up the great work.
           </Text>
@@ -40,7 +43,7 @@ const HomeScreen = ({ navigation }: Props) => {
               <View className="p-4 bg-light_grey rounded-xl mr-4">
                 <FontAwesome name="snowflake-o" size={30} color="white" />
               </View>
-              
+
               <View className="flex-1">
                 <Text className="text-xl text-white font-semibold mb-1">
                   Today's Habit
@@ -62,12 +65,14 @@ const HomeScreen = ({ navigation }: Props) => {
 
         {/* Progress Section */}
         <View className="mb-6">
-          <Text className="text-white text-2xl font-bold mb-4">Progress</Text>
-          
+          <Text className="text-off_white text-2xl font-bold mb-4">
+            Progress
+          </Text>
+
           <View className="bg-dark_grey p-4 rounded-xl">
-            <Chart />
+            <HomeBarChart />
           </View>
-          
+
           {/* Success Rate Box */}
           <SuccessRate percentage={85} />
         </View>
@@ -86,6 +91,5 @@ const HomeScreen = ({ navigation }: Props) => {
     </ScrollView>
   );
 };
-
 
 export default HomeScreen;
