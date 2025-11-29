@@ -16,6 +16,9 @@ module.exports = {
         dark_green: '#15301c',
         light_green: '#a5c9a7',
       },
+      fontSize: {
+        title_Font : "22px"
+      }
     },
   },
   plugins: [],

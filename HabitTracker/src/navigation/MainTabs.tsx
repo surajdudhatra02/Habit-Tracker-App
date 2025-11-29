@@ -19,7 +19,8 @@ export const MainTabs = () => {
         headerTintColor: '#ede8e8', // header text/icon color
         headerTitleStyle: {
           fontWeight: 'bold',
-          textAlign: "center"
+          textAlign: "center",
+          fontSize: 26
         },
         headerTitleAlign: "center",
         tabBarStyle: {
