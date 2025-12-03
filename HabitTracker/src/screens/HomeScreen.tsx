@@ -14,7 +14,7 @@ type Props = CompositeScreenProps<
 
 const HomeScreen = ({ navigation }: Props) => {
   const addIcon = (
-    <MaterialDesignIcons name="plus-circle-outline" size={18} color={'white'} />
+    <MaterialDesignIcons name="plus-circle-outline" size={18} color={'black'} />
   );
 
   return (
@@ -28,7 +28,7 @@ const HomeScreen = ({ navigation }: Props) => {
       <View className="p-6">
         {/* Header Section */}
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-green mb-2">
+          <Text className="text-3xl font-bold text-light_green mb-2">
             Home, User !!
           </Text>
           <Text className="text-grey_text text-base">
@@ -56,7 +56,7 @@ const HomeScreen = ({ navigation }: Props) => {
 
             <Button
               text="Check-in"
-              className="bg-green px-4 py-2 rounded-lg ml-3"
+              className="bg-light_green px-4 py-2 rounded-lg ml-3"
               textClassName="text-dark_bg font-bold text-sm"
               onPress={() => console.log('Check-in')}
             />
@@ -82,8 +82,8 @@ const HomeScreen = ({ navigation }: Props) => {
           <Button
             icon={addIcon}
             text="Add/Change Habit"
-            className="bg-dark_green px-6 py-4 rounded-xl flex-row items-center justify-center"
-            textClassName="text-white font-bold text-base ml-2"
+            className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center"
+            textClassName="text-black font-bold text-base ml-2"
             onPress={() => console.log('Add/Change Habit')}
           />
         </View>

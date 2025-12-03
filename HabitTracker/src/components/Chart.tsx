@@ -9,10 +9,11 @@ export const HomeBarChart = () => {
       <BarChart
         data={barData}
         barWidth={30}
-        frontColor="skyblue"
+        frontColor="#a5c9a7"
         yAxisThickness={0}
         xAxisThickness={0}
         hideRules
+        yAxisTextStyle={{ color:"#949494" }}
       />
     </>
   );

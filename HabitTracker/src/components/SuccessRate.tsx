@@ -10,7 +10,7 @@ const SuccessRate = ({ percentage }: SuccessRateProps) => {
       <Text className="text-grey_text text-lg font-medium mb-2">
         Success Rate
       </Text>
-      <Text className="text-green text-5xl font-bold">
+      <Text className="text-light_green text-5xl font-bold">
         {percentage}%
       </Text>
     </View>

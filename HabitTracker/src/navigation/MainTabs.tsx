@@ -28,7 +28,7 @@ export const MainTabs = () => {
           borderTopWidth: 0,
           height: 60,
         },
-        tabBarActiveTintColor: '#48ea76', // active tab color
+        tabBarActiveTintColor: '#a5c9a7', // active tab color
         tabBarInactiveTintColor: '#ede8e8', // inactive tab color
 
         tabBarIcon: ({ color, size }) => {
