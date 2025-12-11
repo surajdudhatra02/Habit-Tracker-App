@@ -17,6 +17,8 @@ const HomeScreen = ({ navigation }: Props) => {
     <MaterialDesignIcons name="plus-circle-outline" size={18} color={'black'} />
   );
 
+  const toNewHabitScreen = () => navigation.navigate('NewHabit')
+
   return (
     <ScrollView
       className="flex-1 bg-dark_bg"
@@ -84,7 +86,7 @@ const HomeScreen = ({ navigation }: Props) => {
             text="Add/Change Habit"
             className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center"
             textClassName="text-black font-bold text-base ml-2"
-            onPress={() => console.log('Add/Change Habit')}
+            onPress={toNewHabitScreen}
           />
         </View>
       </View>
