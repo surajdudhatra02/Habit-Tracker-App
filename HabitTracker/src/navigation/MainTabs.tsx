@@ -1,18 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from './types';
-import HomeScreen from '../screens/HomeScreen';
-import ProgressScreen from '../screens/ProgressScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
-import { BlurView } from '@react-native-community/blur';
-import { View } from 'react-native';
+import { Routes, RouteScreens } from './route';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainTabs = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={Routes.Home}
       screenOptions={({ route }) => ({
         headerShown: true,
         headerStyle: {
@@ -26,20 +22,10 @@ const MainTabs = () => {
         },
         headerTitleAlign: 'center',
         tabBarStyle: {
-          backgroundColor: 'transparent', // bottom bar background
+          backgroundColor: '#141414', // bottom bar background
           borderTopWidth: 0,
           height: 60,
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          elevation: 0,
         },
-        tabBarBackground: () => (
-          <View style={{ flex: 1, overflow: 'hidden' }}>
-            <BlurView blurType="dark" blurAmount={20} style={{ flex: 1 }} />
-          </View>
-        ),
         tabBarActiveTintColor: '#a5c9a7', // active tab color
         tabBarInactiveTintColor: '#ede8e8', // inactive tab color
 
@@ -59,12 +45,18 @@ const MainTabs = () => {
       })}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name={Routes.Home}
+        component={RouteScreens[Routes.Home]}
         options={{ headerTitle: 'Habit Spark' }}
       />
-      <Tab.Screen name="Progress" component={ProgressScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen
+        name={Routes.Progress}
+        component={RouteScreens[Routes.Progress]}
+      />
+      <Tab.Screen
+        name={Routes.Settings}
+        component={RouteScreens[Routes.Settings]}
+      />
     </Tab.Navigator>
   );
 };
