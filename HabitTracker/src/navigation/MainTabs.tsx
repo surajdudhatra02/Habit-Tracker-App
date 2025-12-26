@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MainTabParamList } from './types';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
-import { Routes, RouteScreens } from './route';
+import { MainTabParamList, Routes, RouteScreens } from './route';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 

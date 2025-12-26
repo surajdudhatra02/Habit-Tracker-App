@@ -1,12 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types';
 import MainTabs from './MainTabs';
-import { Routes, RouteScreens } from './route';
+import { RootStackParamList, Routes, RouteScreens } from './route';
 
 const AppNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
       <Stack.Screen
         name={Routes.Main}
         component={MainTabs}
