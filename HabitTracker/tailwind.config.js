@@ -13,7 +13,7 @@ module.exports = {
         light_grey: '#373738',
         divider_grey: '#525252',
         green: '#48ea76',
-        dark_green: '#15301c',
+        dark_green: '#122118',
         light_green: '#a5c9a7',
       },
       fontSize: {
