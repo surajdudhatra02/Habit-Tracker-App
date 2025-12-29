@@ -8,6 +8,8 @@ interface ReminderItemProps {
   icon: string;
   label: string;
   time: string;
+  description?: string;
+  goal?: string;
   checked: boolean;
   onValueChange: (value: boolean) => void;
 }
@@ -16,6 +18,8 @@ const CheckboxCard: React.FC<ReminderItemProps> = ({
   icon,
   label,
   time,
+  description,
+  goal,
   checked,
   onValueChange,
 }) => {
@@ -27,8 +31,15 @@ const CheckboxCard: React.FC<ReminderItemProps> = ({
         </View>
 
         <View>
-          <Text className="text-white">{label}</Text>
+          <Text className="text-white font-semibold text-xl">{label}</Text>
+
+          {description && (
+            <Text className="text-white mb-3">{description}</Text>
+          )}
+
           <Text className="text-light_green">{time}</Text>
+
+          {goal && <Text className="text-light_green mt-1">Goal: {goal}</Text>}
         </View>
       </View>
 

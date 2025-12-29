@@ -17,6 +17,7 @@ const HomeScreen = ({ navigation }: Props) => {
     <MaterialDesignIcons name="plus-circle-outline" size={18} color={'black'} />
   );
 
+  const toTodayHabit = () => navigation.navigate('TodayHabits')
   const toNewHabitScreen = () => navigation.navigate('NewHabit')
 
   return (
@@ -60,7 +61,7 @@ const HomeScreen = ({ navigation }: Props) => {
               text="Check-in"
               className="bg-light_green px-4 py-2 rounded-lg ml-3"
               textClassName="text-dark_bg font-bold text-sm"
-              onPress={() => console.log('Check-in')}
+              onPress={toTodayHabit}
             />
           </View>
         </View>

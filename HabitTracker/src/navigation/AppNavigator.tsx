@@ -29,6 +29,11 @@ const AppNavigator = () => {
         component={RouteScreens[Routes.NewHabit]}
         options={{ headerTitle: 'New Habit' }}
       />
+      <Stack.Screen
+        name={Routes.TodayHabits}
+        component={RouteScreens[Routes.TodayHabits]}
+        options={{ headerTitle: "Today's Habits" }}
+      />
     </Stack.Navigator>
   );
 };

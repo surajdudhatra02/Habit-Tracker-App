@@ -2,6 +2,27 @@ import { View, Text, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { Button, Divider, Input, CheckboxCard } from '../components';
 
+const REMINDER_OPTIONS = [
+  {
+    id: 'morning',
+    icon: 'white-balance-sunny',
+    label: 'Morning',
+    time: '8:00 AM',
+  },
+  {
+    id: 'afternoon',
+    icon: 'white-balance-sunny',
+    label: 'Afternoon',
+    time: '1:00 PM',
+  },
+  {
+    id: 'evening',
+    icon: 'weather-night',
+    label: 'Evening',
+    time: '7:00 PM',
+  },
+];
+
 const NewHabitScreen = ({}) => {
   const [reminders, setReminders] = useState({
     morning: false,
@@ -32,33 +53,18 @@ const NewHabitScreen = ({}) => {
           </Text>
 
           <View className="bg-dark_grey rounded-xl p-4">
-            <CheckboxCard
-              icon="white-balance-sunny"
-              label="Morning"
-              time="8:00 AM"
-              checked={reminders.morning}
-              onValueChange={handleReminderChange('morning')}
-            />
-
-            <Divider />
-
-            <CheckboxCard
-              icon="white-balance-sunny"
-              label="Afternoon"
-              time="1:00 PM"
-              checked={reminders.afternoon}
-              onValueChange={handleReminderChange('afternoon')}
-            />
-
-            <Divider />
-
-            <CheckboxCard
-              icon="weather-night"
-              label="Evening"
-              time="7:00 PM"
-              checked={reminders.evening}
-              onValueChange={handleReminderChange('evening')}
-            />
+            {REMINDER_OPTIONS.map((reminder, index) => (
+              <React.Fragment key={reminder.id}>
+                {index > 0 && <Divider />}
+                <CheckboxCard
+                  icon={reminder.icon}
+                  label={reminder.label}
+                  time={reminder.time}
+                  checked={reminders[reminder.id]}
+                  onValueChange={handleReminderChange(reminder.id)}
+                />
+              </React.Fragment>
+            ))}
           </View>
         </View>
 

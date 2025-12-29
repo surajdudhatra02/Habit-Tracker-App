@@ -3,6 +3,7 @@ import {
   NewHabitScreen,
   ProgressScreen,
   SettingsScreen,
+  TodayHabitsScreen,
 } from '../screens';
 
 export enum Routes {
@@ -11,6 +12,7 @@ export enum Routes {
   Progress = 'Progress',
   Settings = 'Settings',
   NewHabit = 'NewHabit',
+  TodayHabits = 'TodayHabits',
 }
 
 export const RouteScreens = {
@@ -18,6 +20,7 @@ export const RouteScreens = {
   [Routes.Progress]: ProgressScreen,
   [Routes.Settings]: SettingsScreen,
   [Routes.NewHabit]: NewHabitScreen,
+  [Routes.TodayHabits]: TodayHabitsScreen,
 };
 
 export type MainTabParamList = {
@@ -31,4 +34,5 @@ export type RootStackParamList = {
   [Routes.Progress]: undefined;
   [Routes.Settings]: undefined;
   [Routes.NewHabit]: undefined;
+  [Routes.TodayHabits]: undefined;
 };
