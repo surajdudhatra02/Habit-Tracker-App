@@ -1,4 +1,5 @@
 import { Calendar } from 'react-native-calendars';
+import { colors } from '../constants';
 
 const CalendarComponent = () => {
   const today = new Date();
@@ -14,13 +15,13 @@ const CalendarComponent = () => {
       hideExtraDays
       theme={{
         calendarBackground: 'transparent',
-        monthTextColor: '#a5c9a7',
+        monthTextColor: colors.light_green,
         textMonthFontWeight: 'semibold',
-        arrowColor: '#373738',
-        dayTextColor: '#dddddd',
-        selectedDayTextColor: '#141414',
-        selectedDayBackgroundColor: '#a5c9a7',
-        todayTextColor: '#a5c9a7',
+        arrowColor: colors.light_grey,
+        dayTextColor: colors.off_white,
+        selectedDayTextColor: colors.dark_bg,
+        selectedDayBackgroundColor: colors.light_green,
+        todayTextColor: colors.light_green,
       }}
     />
   );

@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 import { BarChart, CurveType, LineChart } from 'react-native-gifted-charts';
+import { colors } from '../constants';
 
 export const HomeBarChart = () => {
   const barData = [{ value: 15 }, { value: 30 }, { value: 26 }, { value: 40 }];
@@ -9,11 +10,11 @@ export const HomeBarChart = () => {
       <BarChart
         data={barData}
         barWidth={30}
-        frontColor="#a5c9a7"
+        frontColor={colors.light_green}
         yAxisThickness={0}
         xAxisThickness={0}
         hideRules
-        yAxisTextStyle={{ color:"#949494" }}
+        yAxisTextStyle={{ color: colors.grey_text }}
       />
     </>
   );
@@ -33,7 +34,7 @@ export const ProgressCurveChart = () => {
     <View className="-ml-4">
       <LineChart
         data={barData}
-        color={'#a5c9a7'}
+        color={colors.light_green}
         yAxisThickness={0}
         xAxisThickness={0}
         curveType={CurveType.QUADRATIC}
@@ -43,7 +44,7 @@ export const ProgressCurveChart = () => {
         curved
         isAnimated
         xAxisLabelTextStyle={{
-          color: '#949494',
+          color: colors.grey_text,
         }}
       />
     </View>

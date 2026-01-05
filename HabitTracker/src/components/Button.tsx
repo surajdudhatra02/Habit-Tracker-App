@@ -6,6 +6,7 @@ import {
   GestureResponderEvent,
   ActivityIndicator,
 } from 'react-native';
+import { colors } from '../constants';
 
 export interface ButtonProps {
   text: string;
@@ -28,7 +29,7 @@ const Button: React.FC<ButtonProps> = ({
   onPress,
   disabled = false,
   loading = false,
-  loadingColor = '#ffffff',
+  loadingColor = colors.white,
   accessibilityLabel,
   children,
 }) => {

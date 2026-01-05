@@ -1,16 +1,17 @@
 import { View, Text, ScrollView } from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Divider, ToggleSwitch } from '../components';
+import { colors } from '../constants';
 
 const SettingsScreen = () => {
   const shareIcon = (
-    <MaterialDesignIcons name="share" color={'#949494'} size={23} />
+    <MaterialDesignIcons name="share" color={colors.grey_text} size={23} />
   );
   const rateIcon = (
-    <MaterialDesignIcons name="star" color={'#949494'} size={23} />
+    <MaterialDesignIcons name="star" color={colors.grey_text} size={23} />
   );
   const rightIcon = (
-    <MaterialDesignIcons name="menu-right" color={'#949494'} size={30} />
+    <MaterialDesignIcons name="menu-right" color={colors.grey_text} size={30} />
   );
 
   return (

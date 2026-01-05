@@ -1,13 +1,14 @@
 import { View, Text, ScrollView } from 'react-native';
 import { Button, CalendarComponent, ProgressCurveChart } from '../components';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { colors } from '../constants';
 
 const ProgressScreen = () => {
   const exportIcon = (
-    <MaterialDesignIcons name="download" color={'#a5c9a7'} size={18} />
+    <MaterialDesignIcons name="download" color={colors.light_green} size={18} />
   );
   const shareIcon = (
-    <MaterialDesignIcons name="share" color={'black'} size={18} />
+    <MaterialDesignIcons name="share" color={colors.black} size={18} />
   );
 
   return (
@@ -40,7 +41,7 @@ const ProgressScreen = () => {
                   <MaterialDesignIcons
                     name="trending-up"
                     size={18}
-                    color={'#a5c9a7'}
+                    color={colors.light_green}
                   />
                   <Text className="text-light_green font-semibold text-xl">
                     +10%
@@ -62,7 +63,7 @@ const ProgressScreen = () => {
           <View className="bg-dark_grey p-6 rounded-xl flex-row items-center gap-2">
             <MaterialDesignIcons
               name="lightbulb-outline"
-              color={'#a5c9a7'}
+              color={colors.light_green}
               size={30}
             />
             <Text className="text-grey_text italic text-lg flex-1">

@@ -6,6 +6,7 @@ import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Button, HomeBarChart, SuccessRate } from '../components';
 import { MainTabParamList, RootStackParamList } from '../navigation';
+import { colors } from '../constants';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -14,7 +15,7 @@ type Props = CompositeScreenProps<
 
 const HomeScreen = ({ navigation }: Props) => {
   const addIcon = (
-    <MaterialDesignIcons name="plus-circle-outline" size={18} color={'black'} />
+    <MaterialDesignIcons name="plus-circle-outline" size={18} color={colors.black} />
   );
 
   const toTodayHabit = () => navigation.navigate('TodayHabits')
@@ -44,7 +45,7 @@ const HomeScreen = ({ navigation }: Props) => {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
               <View className="p-4 bg-light_grey rounded-xl mr-4">
-                <FontAwesome name="snowflake-o" size={30} color="white" />
+                <FontAwesome name="snowflake-o" size={30} color={colors.white} />
               </View>
 
               <View className="flex-1">
