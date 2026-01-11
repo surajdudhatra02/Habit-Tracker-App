@@ -7,6 +7,7 @@ import ToggleSwitch from './Toggle';
 import Input from './Input';
 import CustomCheckbox from './CustomCheckbox';
 import CheckboxCard from './CheckboxCard';
+import TimePicker from './TimePicker';
 
 export {
   Button,
@@ -19,4 +20,5 @@ export {
   Input,
   CustomCheckbox,
   CheckboxCard,
+  TimePicker
 };

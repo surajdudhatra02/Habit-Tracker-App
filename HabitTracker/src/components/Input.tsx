@@ -2,7 +2,7 @@ import { View, TextInput } from 'react-native';
 import React from 'react';
 import { colors } from '../constants';
 
-const Input = ({ placeholder, lines }) => {
+const Input = ({ placeholder, lines, value, onChangeText }) => {
   return (
     <TextInput
       placeholder={placeholder}
@@ -11,6 +11,8 @@ const Input = ({ placeholder, lines }) => {
       numberOfLines={lines}
       multiline
       textAlignVertical="top"
+      value={value}
+      onChangeText={onChangeText}
     />
   );
 };
