@@ -1,6 +1,7 @@
 import { Session, User } from '@supabase/supabase-js';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useDeepLink } from '../hooks';
 
 type AuthContextType = {
   user: User | null;
@@ -15,6 +16,8 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  useDeepLink();
+
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
