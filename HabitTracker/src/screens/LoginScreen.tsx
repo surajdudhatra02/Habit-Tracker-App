@@ -1,8 +1,9 @@
-import { View, Text, Linking } from 'react-native';
+import { View, Text, Linking, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input } from '../components';
 import { supabase } from '../lib/supabase';
+import { Routes } from '../navigation/route';
 
 const loginWithGoogle = async () => {
   const redirectTo = 'habittracker://auth';
@@ -24,10 +25,11 @@ const loginWithGoogle = async () => {
   }
 };
 
-const LoginScreen = () => {
-  const login = () => {
-    console.log('login');
-  };
+const login = () => {
+  console.log('login');
+};
+
+const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView className="bg-dark_bg flex-1 justify-center items-center">
       <Text className="text-5xl font-bold text-light_green mb-20">Login</Text>
@@ -53,6 +55,13 @@ const LoginScreen = () => {
           textClassName="text-white font-bold text-base"
           onPress={loginWithGoogle}
         />
+      </View>
+
+      <View className="flex-row items-center mt-20">
+        <Text className="text-sm text-grey_text">Don't have an account ? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate(Routes.SignUp)}>
+          <Text className="text-sm text-off_white">Sign Up</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
