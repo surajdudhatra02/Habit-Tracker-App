@@ -13,17 +13,10 @@ const SignUpScreen = ({ navigation }) => {
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  console.log('EMAIL RAW:', JSON.stringify(email));
-
   const onSignUp = async () => {
     const trimmedEmail = email.trim().toLowerCase();
     const trimmedPassword = password.trim();
     const trimmedConfirm = confirm.trim();
-
-    if (password !== confirm) {
-      console.log('Passwords do not match');
-      return;
-    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
@@ -83,12 +76,14 @@ const SignUpScreen = ({ navigation }) => {
           placeholder="Enter Password"
           className="p-5"
           value={password}
+          secureTextEntry
           onChangeText={setPassword}
         />
         <Input
           placeholder="Confirm Password"
           className="p-5"
           value={confirm}
+          secureTextEntry
           onChangeText={setConfirm}
         />
 

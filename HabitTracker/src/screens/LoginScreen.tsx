@@ -1,12 +1,13 @@
-import { View, Text, Linking, TouchableOpacity } from 'react-native';
+import { View, Text, Linking, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input } from '../components';
 import { Routes } from '../navigation/route';
 import { useAuthActions } from '../hooks';
+import { validateEmail } from '../utils';
 
 const login = () => {
-  console.log('login');
+  // console.log('login');
 };
 
 const LoginScreen = ({ navigation }) => {
@@ -14,12 +15,37 @@ const LoginScreen = ({ navigation }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onLogin = async () => {
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!validateEmail(trimmedEmail)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return;
+    }
+    
+    setLoading(true);
     try {
-      await loginWithEmail(email, password);
+      await loginWithEmail(email.trim(), password.trim());
     } catch (err: any) {
-      console.log(err.message);
+      if (err.message.include('Email not confirmed')) {
+        Alert.alert(
+          'Email Not Verified',
+          'Please verify your email address before logging in.',
+          [
+            { text: 'OK' },
+            {
+              text: 'Resend Email',
+              onPress: () => {
+                navigation.navigate(Routes.EmailConfirm, { email });
+              },
+            },
+          ],
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,14 +64,16 @@ const LoginScreen = ({ navigation }) => {
           placeholder="Enter Password"
           className="p-5"
           value={password}
+          secureTextEntry
           onChangeText={setPassword}
         />
 
         <Button
-          text="Login"
+          text={loading ? 'Logging in...' : 'Login'}
           className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center mt-4"
           textClassName="text-black font-bold text-base"
           onPress={onLogin}
+          disabled={loading}
         />
 
         <Text className="text-xl text-center font-bold text-grey_text ">
