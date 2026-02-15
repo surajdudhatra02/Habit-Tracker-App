@@ -1,5 +1,6 @@
 import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
+import EmailConfirmationScreen from './EmailConfirmationScreen';
 
 import HomeScreen from './HomeScreen';
 import ProgressScreen from './ProgressScreen';
@@ -10,6 +11,7 @@ import TodayHabitsScreen from './TodayHabitsScreen';
 export {
   LoginScreen,
   SignUpScreen,
+  EmailConfirmationScreen,
   HomeScreen,
   ProgressScreen,
   SettingsScreen,

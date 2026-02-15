@@ -16,6 +16,11 @@ const AuthNavigator = () => {
         name={Routes.SignUp}
         component={RouteScreens[Routes.SignUp]}
       />
+
+      <Stack.Screen
+        name={Routes.EmailConfirm}
+        component={RouteScreens[Routes.EmailConfirm]}
+      />
     </Stack.Navigator>
   );
 };

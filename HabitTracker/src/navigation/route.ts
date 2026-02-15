@@ -1,6 +1,7 @@
 import {
   LoginScreen,
   SignUpScreen,
+  EmailConfirmationScreen,
   HomeScreen,
   NewHabitScreen,
   ProgressScreen,
@@ -11,6 +12,7 @@ import {
 export enum Routes {
   Login = 'Login',
   SignUp = 'SignUp',
+  EmailConfirm = 'EmailConfirm',
 
   Main = 'Main',
   Home = 'Home',
@@ -23,6 +25,7 @@ export enum Routes {
 export const RouteScreens = {
   [Routes.Login]: LoginScreen,
   [Routes.SignUp]: SignUpScreen,
+  [Routes.EmailConfirm]: EmailConfirmationScreen,
 
   [Routes.Home]: HomeScreen,
   [Routes.Progress]: ProgressScreen,
@@ -34,6 +37,7 @@ export const RouteScreens = {
 export type AuthStackParamList = {
   [Routes.Login]: undefined;
   [Routes.SignUp]: undefined;
+  [Routes.EmailConfirm]: undefined;
 };
 
 export type MainTabParamList = {
