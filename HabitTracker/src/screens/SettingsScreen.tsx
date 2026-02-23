@@ -1,9 +1,12 @@
 import { View, Text, ScrollView } from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { Divider, ToggleSwitch } from '../components';
+import { Button, Divider, ToggleSwitch } from '../components';
 import { colors } from '../constants';
+import { useAuth } from '../hooks';
 
 const SettingsScreen = () => {
+  const { logout } = useAuth();
+
   const shareIcon = (
     <MaterialDesignIcons name="share" color={colors.grey_text} size={23} />
   );
@@ -34,7 +37,9 @@ const SettingsScreen = () => {
       </View>
 
       <View className="p-4">
-        <Text className="text-off_white text-title_Font font-bold mb-4">Settings</Text>
+        <Text className="text-off_white text-title_Font font-bold mb-4">
+          Settings
+        </Text>
 
         <View className="bg-light_grey p-4 rounded-xl">
           <View className="flex-row items-center justify-between">
@@ -91,6 +96,13 @@ const SettingsScreen = () => {
           </View>
         </View>
       </View>
+
+      <Button
+        text="Logout"
+        onPress={logout}
+        className="bg-dark_grey px-6 py-4 mx-4 rounded-xl flex-row items-center justify-center border border-light_grey"
+        textClassName="text-white font-bold text-base"
+      />
     </ScrollView>
   );
 };
