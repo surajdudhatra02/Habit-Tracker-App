@@ -1,8 +1,9 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Button, Divider, Input, Popup, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
+import { useHabits } from '../hooks';
 
 type Reminder = {
   id: string;
@@ -10,11 +11,13 @@ type Reminder = {
 };
 
 const NewHabitScreen = ({ navigation }) => {
+  const { createHabit } = useHabits();
   const [habitName, setHabitName] = useState('');
   const [description, setDescription] = useState('');
   const [goal, setGoal] = useState('');
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -45,6 +48,12 @@ const NewHabitScreen = ({ navigation }) => {
     });
   };
 
+  const formatTimeForDB = (date: Date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`; // Returns "09:00", "14:30", etc.
+  };
+
   const validateAndShowConfirm = () => {
     // Validate habit name
     if (!habitName.trim()) {
@@ -64,23 +73,36 @@ const NewHabitScreen = ({ navigation }) => {
     setShowConfirmPopup(true);
   };
 
-  const saveNewHabit = () => {
-    const habitData = {
-      name: habitName,
-      description: description,
-      goal: goal,
-      reminders: reminders.map(r => ({
-        time: formatTime(r.time),
-        timestamp: r.time.toISOString(),
-      })),
-      createdAt: new Date().toISOString(),
-    };
+  const saveNewHabit = async () => {
+    setLoading(true);
 
-    console.log('Saving habit:', habitData);
+    try {
+      // Convert reminders to HH:MM format for database
+      const reminderTimes = reminders.map(r => formatTimeForDB(r.time));
 
-    // TODO: Save to backend
-    setShowConfirmPopup(false);
-    navigation.goBack();
+      await createHabit({
+        name: habitName.trim(),
+        description: description.trim() || undefined,
+        goal: goal.trim() || undefined,
+        reminders: reminderTimes, // ["09:00", "14:30"]
+      });
+
+      setShowConfirmPopup(false);
+
+      Alert.alert('Success', 'Habit created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Error saving habit:', error);
+      setShowConfirmPopup(false);
+      setErrorMessage('Failed to save habit. Please try again.');
+      setShowErrorPopup(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addIcon = (
