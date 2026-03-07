@@ -72,14 +72,43 @@ export const useHabits = () => {
     }
   };
 
-  const updateHabit = async (habitId: string, updates: Partial<Habit>) => {
+  const updateHabit = async (
+    habitId: string,
+    updates: Partial<Habit> & { reminders?: string[] },
+  ) => {
     try {
+      const { reminders, ...habitUpdates } = updates;
+
       const { error } = await supabase
         .from('habits')
-        .update(updates)
+        .update(habitUpdates)
         .eq('id', habitId);
 
       if (error) throw error;
+
+      if (reminders !== undefined) {
+        // Delete existing reminders
+        const { error: deleteError } = await supabase
+          .from('habit_reminders')
+          .delete()
+          .eq('habit_id', habitId);
+
+        if (deleteError) throw deleteError;
+
+        // Insert new reminders
+        if (reminders.length > 0) {
+          const { error: insertError } = await supabase
+            .from('habit_reminders')
+            .insert(
+              reminders.map(time => ({
+                habit_id: habitId,
+                reminder_time: `${time}:00`,
+              })),
+            );
+
+          if (insertError) throw insertError;
+        }
+      }
       await fetchHabits();
     } catch (error: any) {
       console.error('Error updating habit:', error.message);

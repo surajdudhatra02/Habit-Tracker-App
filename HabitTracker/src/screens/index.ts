@@ -8,6 +8,7 @@ import SettingsScreen from './SettingsScreen';
 import NewHabitScreen from './NewHabitScreen';
 import TodayHabitsScreen from './TodayHabitsScreen';
 import HabitsScreen from './HabitsScreen';
+import HabitDetailsScreen from './HabitDetailsScreen';
 
 export {
   LoginScreen,
@@ -19,4 +20,5 @@ export {
   NewHabitScreen,
   TodayHabitsScreen,
   HabitsScreen,
+  HabitDetailsScreen,
 };

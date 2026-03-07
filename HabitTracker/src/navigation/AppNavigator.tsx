@@ -27,7 +27,9 @@ const AppNavigator = () => {
       <Stack.Screen
         name={Routes.NewHabit}
         component={RouteScreens[Routes.NewHabit]}
-        options={{ headerTitle: 'New Habit' }}
+        options={({ route }: any) => ({
+          headerTitle: route.params?.habit ? 'Edit Habit' : 'New Habit',
+        })}
       />
       <Stack.Screen
         name={Routes.TodayHabits}
@@ -38,6 +40,11 @@ const AppNavigator = () => {
         name={Routes.Habits}
         component={RouteScreens[Routes.Habits]}
         options={{ headerTitle: 'Habits' }}
+      />
+      <Stack.Screen
+        name={Routes.HabitDetails}
+        component={RouteScreens[Routes.HabitDetails]}
+        options={{ headerTitle: 'Habit Details' }}
       />
     </Stack.Navigator>
   );

@@ -1,20 +1,27 @@
-import { View, Text, ScrollView, Alert } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Button, Divider, Input, Popup, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabits } from '../hooks';
+import { Habit } from '../types';
 
 type Reminder = {
   id: string;
   time: Date;
 };
 
-const NewHabitScreen = ({ navigation }) => {
-  const { createHabit } = useHabits();
-  const [habitName, setHabitName] = useState('');
-  const [description, setDescription] = useState('');
-  const [goal, setGoal] = useState('');
+const NewHabitScreen = ({ navigation, route }: any) => {
+  const existingHabit: Habit | undefined = route?.params?.habit;
+  const isEditMode = !!existingHabit;
+
+  const { createHabit, updateHabit, getHabitReminders } = useHabits();
+
+  const [habitName, setHabitName] = useState(existingHabit?.name || '');
+  const [description, setDescription] = useState(
+    existingHabit?.description || '',
+  );
+  const [goal, setGoal] = useState(existingHabit?.goal || '');
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,6 +30,28 @@ const NewHabitScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: isEditMode ? 'Edit Habit' : 'New Habit',
+    });
+
+    if (isEditMode) {
+      getHabitReminders(existingHabit!.id).then(data => {
+        setReminders(
+          data.map(r => ({
+            id: r.id,
+            time: (() => {
+              const [h, m] = r.reminder_time.split(':');
+              const d = new Date();
+              d.setHours(+h, +m, 0, 0);
+              return d;
+            })(),
+          })),
+        );
+      });
+    }
+  }, []);
+
   const handleAddReminder = () => {
     setShowTimePicker(true);
   };
@@ -30,7 +59,7 @@ const NewHabitScreen = ({ navigation }) => {
   const handleTimeSelected = (time: Date) => {
     const newReminder: Reminder = {
       id: `reminder_${Date.now()}`,
-      time: time,
+      time,
     };
     setReminders(prev => [...prev, newReminder]);
     setShowTimePicker(false);
@@ -51,50 +80,53 @@ const NewHabitScreen = ({ navigation }) => {
   const formatTimeForDB = (date: Date) => {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`; // Returns "09:00", "14:30", etc.
+    return `${hours}:${minutes}`;
   };
 
   const validateAndShowConfirm = () => {
-    // Validate habit name
     if (!habitName.trim()) {
       setErrorMessage('Please enter a habit name to continue.');
       setShowErrorPopup(true);
       return;
     }
 
-    // Validate at least one reminder
     if (reminders.length === 0) {
       setErrorMessage('Please add at least one reminder time.');
       setShowErrorPopup(true);
       return;
     }
 
-    // All validations passed, show confirmation
     setShowConfirmPopup(true);
   };
 
-  const saveNewHabit = async () => {
+  const handleSave = async () => {
     setLoading(true);
-
     try {
-      // Convert reminders to HH:MM format for database
       const reminderTimes = reminders.map(r => formatTimeForDB(r.time));
 
-      await createHabit({
-        name: habitName.trim(),
-        description: description.trim() || undefined,
-        goal: goal.trim() || undefined,
-        reminders: reminderTimes, // ["09:00", "14:30"]
-      });
-
-      setShowConfirmPopup(false);
-
-      Alert.alert('Success', 'Habit created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.goBack(),
-        },
-      ]);
+      if (isEditMode) {
+        await updateHabit(existingHabit!.id, {
+          name: habitName.trim(),
+          description: description.trim() || undefined,
+          goal: goal.trim() || undefined,
+          reminders: reminderTimes,
+        });
+        setShowConfirmPopup(false);
+        Alert.alert('Updated', 'Habit updated successfully!', [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ]);
+      } else {
+        await createHabit({
+          name: habitName.trim(),
+          description: description.trim() || undefined,
+          goal: goal.trim() || undefined,
+          reminders: reminderTimes,
+        });
+        setShowConfirmPopup(false);
+        Alert.alert('Success', 'Habit created successfully!', [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ]);
+      }
     } catch (error: any) {
       console.error('Error saving habit:', error);
       setShowConfirmPopup(false);
@@ -110,14 +142,6 @@ const NewHabitScreen = ({ navigation }) => {
       name="plus-circle-outline"
       size={18}
       color={colors.off_white}
-    />
-  );
-
-  const removeIcon = (
-    <MaterialDesignIcons
-      name="close-circle"
-      size={24}
-      color={colors.light_grey}
     />
   );
 
@@ -147,7 +171,6 @@ const NewHabitScreen = ({ navigation }) => {
               Reminders
             </Text>
 
-            {/* Only show background when reminders exist */}
             {reminders.length > 0 && (
               <View className="bg-dark_grey rounded-xl p-4 mb-4">
                 {reminders.map((reminder, index) => (
@@ -169,11 +192,17 @@ const NewHabitScreen = ({ navigation }) => {
                           </Text>
                         </View>
                       </View>
-                      <Button
+                      <TouchableOpacity
                         onPress={() => handleRemoveReminder(reminder.id)}
                         className="p-2"
-                        text={removeIcon}
-                      ></Button>
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <MaterialDesignIcons
+                          name="close-circle"
+                          size={24}
+                          color={colors.light_grey}
+                        />
+                      </TouchableOpacity>
                     </View>
                   </React.Fragment>
                 ))}
@@ -213,7 +242,15 @@ const NewHabitScreen = ({ navigation }) => {
 
           {/* Save Button */}
           <Button
-            text="Save Habit"
+            text={
+              loading
+                ? isEditMode
+                  ? 'Updating…'
+                  : 'Saving…'
+                : isEditMode
+                ? 'Update Habit'
+                : 'Save Habit'
+            }
             className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center mt-4"
             textClassName="text-black font-bold text-base"
             onPress={validateAndShowConfirm}
@@ -229,16 +266,19 @@ const NewHabitScreen = ({ navigation }) => {
           onConfirm={() => setShowErrorPopup(false)}
         />
 
-        {/* Confirmation Popup */}
         <Popup
           visible={showConfirmPopup}
           type="warning"
-          title="Save Habit?"
-          message="Are you sure you want to save this habit?"
+          title={isEditMode ? 'Update Habit?' : 'Save Habit?'}
+          message={
+            isEditMode
+              ? `Save changes to "${habitName.trim()}"?`
+              : 'Are you sure you want to save this habit?'
+          }
           showCancel={true}
-          confirmText="Yes, Save"
+          confirmText={isEditMode ? 'Yes, Update' : 'Yes, Save'}
           cancelText="Cancel"
-          onConfirm={saveNewHabit}
+          onConfirm={handleSave}
           onCancel={() => setShowConfirmPopup(false)}
         />
       </ScrollView>

@@ -8,6 +8,7 @@ import {
   SettingsScreen,
   TodayHabitsScreen,
   HabitsScreen,
+  HabitDetailsScreen,
 } from '../screens';
 
 export enum Routes {
@@ -22,6 +23,7 @@ export enum Routes {
   NewHabit = 'NewHabit',
   TodayHabits = 'TodayHabits',
   Habits = 'Habits',
+  HabitDetails = 'HabitDetails',
 }
 
 export const RouteScreens = {
@@ -35,6 +37,7 @@ export const RouteScreens = {
   [Routes.NewHabit]: NewHabitScreen,
   [Routes.TodayHabits]: TodayHabitsScreen,
   [Routes.Habits]: HabitsScreen,
+  [Routes.HabitDetails]: HabitDetailsScreen,
 };
 
 export type AuthStackParamList = {
@@ -53,7 +56,8 @@ export type RootStackParamList = {
   [Routes.Home]: undefined;
   [Routes.Progress]: undefined;
   [Routes.Settings]: undefined;
-  [Routes.NewHabit]: undefined;
+  [Routes.NewHabit]: { habit?: import('../types').Habit } | undefined;
   [Routes.TodayHabits]: undefined;
   [Routes.Habits]: undefined;
+  [Routes.HabitDetails]: { habit: import('../types').Habit };
 };
