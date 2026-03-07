@@ -1,26 +1,22 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { Popup } from '../components';
+import { Button, Popup } from '../components';
 import { colors } from '../constants';
 import { useHabits } from '../hooks';
 import { Habit, HabitReminder } from '../types';
+import { formatDate, formatTime, daysSince } from '../utils';
 
 const HabitDetailsScreen = ({ route, navigation }: any) => {
-  const { habit: initialHabit } = route.params;
   const { deleteHabit, getHabitReminders } = useHabits();
 
-  const [habit] = useState<Habit>(initialHabit);
+  const [habit, setHabit] = useState<Habit>(route.params.habit);
   const [reminders, setReminders] = useState<HabitReminder[]>([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    loadReminders();
-  }, []);
-
-  const loadReminders = async () => {
-    const data = await getHabitReminders(habit.id);
+  const loadReminders = async (habitId?: string) => {
+    const data = await getHabitReminders(habitId || habit.id);
     setReminders(data);
   };
 
@@ -35,32 +31,6 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
       setDeleting(false);
       setShowDeletePopup(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
-  const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
-    const h = parseInt(hours, 10);
-    const period = h >= 12 ? 'PM' : 'AM';
-    const displayHour = h % 12 === 0 ? 12 : h % 12;
-    return `${displayHour}:${minutes} ${period}`;
-  };
-
-  const daysSince = () => {
-    const created = new Date(habit.created_at);
-    const now = new Date();
-    return Math.floor(
-      (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24),
-    );
   };
 
   return (
@@ -127,7 +97,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
               color={colors.light_green}
             />
             <Text className="text-off_white text-xl font-bold mt-2">
-              {daysSince()}
+              {daysSince(habit.created_at)}
             </Text>
             <Text className="text-grey_text text-xs mt-1 text-center">
               Days Active
@@ -154,7 +124,6 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
           <Text className="text-grey_text text-xs font-semibold uppercase mb-4 tracking-widest">
             Timeline
           </Text>
-
           <View className="flex-row items-center mb-4">
             <View className="bg-light_grey p-2 rounded-lg mr-3">
               <MaterialDesignIcons
@@ -245,40 +214,43 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
           </View>
         )}
 
+        {/* Buttons */}
         <View className="px-6 pt-4 pb-8 gap-y-3 mt-4">
-          <TouchableOpacity
-            onPress={() => navigation.navigate('NewHabit', { habit })}
-            activeOpacity={0.85}
-            className="flex-row items-center justify-center rounded-2xl py-4"
-            style={{ backgroundColor: colors.light_green }}
-          >
-            <MaterialDesignIcons
-              name="pencil-outline"
-              size={20}
-              color={colors.black}
-            />
-            <Text className="text-black font-bold text-base ml-2">
-              Edit Habit
-            </Text>
-          </TouchableOpacity>
+          <Button
+            text="Edit Habit"
+            className="bg-light_green rounded-2xl py-4"
+            textClassName="text-black font-bold text-base"
+            icon={
+              <MaterialDesignIcons
+                name="pencil-outline"
+                size={20}
+                color={colors.black}
+              />
+            }
+            onPress={() =>
+              navigation.navigate('NewHabit', {
+                habit,
+                onUpdate: (updatedHabit: Habit) => {
+                  setHabit(updatedHabit);
+                  loadReminders(updatedHabit.id);
+                },
+              })
+            }
+          />
 
-          <TouchableOpacity
+          <Button
+            text="Delete Habit"
+            className="bg-dark_grey border border-light_grey rounded-2xl py-4"
+            textClassName="text-base font-semibold text-red"
+            icon={
+              <MaterialDesignIcons
+                name="trash-can-outline"
+                size={20}
+                color={colors.red}
+              />
+            }
             onPress={() => setShowDeletePopup(true)}
-            activeOpacity={0.85}
-            className="flex-row items-center justify-center bg-dark_grey border border-light_grey rounded-2xl py-4"
-          >
-            <MaterialDesignIcons
-              name="trash-can-outline"
-              size={20}
-              color="#FF5A5F"
-            />
-            <Text
-              className="text-base font-semibold ml-2"
-              style={{ color: '#FF5A5F' }}
-            >
-              Delete Habit
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
 
         <Popup

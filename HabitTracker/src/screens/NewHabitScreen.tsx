@@ -113,7 +113,21 @@ const NewHabitScreen = ({ navigation, route }: any) => {
         });
         setShowConfirmPopup(false);
         Alert.alert('Updated', 'Habit updated successfully!', [
-          { text: 'OK', onPress: () => navigation.goBack() },
+          {
+            text: 'OK',
+            onPress: () => {
+              // Call the callback to update Details screen directly
+              const updatedHabit = {
+                ...existingHabit,
+                name: habitName.trim(),
+                description: description.trim() || undefined,
+                goal: goal.trim() || undefined,
+                updated_at: new Date().toISOString(),
+              };
+              route.params?.onUpdate?.(updatedHabit);
+              navigation.goBack(); // just go back, no new screen pushed
+            },
+          },
         ]);
       } else {
         await createHabit({

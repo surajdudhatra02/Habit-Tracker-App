@@ -15,6 +15,7 @@ module.exports = {
         green: '#48ea76',
         dark_green: '#122118',
         light_green: '#a5c9a7',
+        red: '#FF5A5F',
       },
       fontSize: {
         title_Font : "22px"

@@ -6,51 +6,24 @@ import {
   RefreshControl,
 } from 'react-native';
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabits } from '../hooks';
 import { Habit } from '../types';
-
-const ICON_NAMES = [
-  'run-fast',
-  'book-open-variant',
-  'water',
-  'dumbbell',
-  'meditation',
-  'food-apple',
-  'sleep',
-  'bicycle',
-  'music',
-  'pencil',
-];
-
-const getHabitIcon = (name: string) => {
-  const idx =
-    name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) %
-    ICON_NAMES.length;
-  return ICON_NAMES[idx];
-};
-
-const daysSince = (dateString: string) => {
-  const created = new Date(dateString);
-  const now = new Date();
-  return Math.floor(
-    (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24),
-  );
-};
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
+import { Button, EmptyState, LoadingState } from '../components';
+import { getHabitIcon, daysSince, formatDate } from '../utils';
 
 const HabitsScreen = ({ navigation }: any) => {
   const { habits, loading, fetchHabits } = useHabits();
   const [refreshing, setRefreshing] = useState(false);
+
+  // Auto refresh every time screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchHabits();
+    }, []),
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -62,54 +35,6 @@ const HabitsScreen = ({ navigation }: any) => {
       setRefreshing(false);
     }
   };
-
-  const EmptyState = () => (
-    <View className="flex-1 items-center justify-center py-24">
-      <View
-        className="rounded-full p-7 mb-6"
-        style={{ backgroundColor: '#1C1C1F' }}
-      >
-        <MaterialDesignIcons
-          name="clipboard-list-outline"
-          size={56}
-          color={colors.light_green}
-        />
-      </View>
-      <Text className="text-off_white text-2xl font-bold mb-3 text-center">
-        No Habits Yet
-      </Text>
-      <Text className="text-grey_text text-sm text-center px-10 leading-6 mb-8">
-        Start building better habits today. Small steps lead to big changes.
-      </Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('NewHabit')}
-        activeOpacity={0.85}
-        className="flex-row items-center px-7 py-4 rounded-2xl"
-        style={{ backgroundColor: colors.light_green }}
-      >
-        <MaterialDesignIcons name="plus" size={18} color={colors.black} />
-        <Text className="text-black font-bold text-base ml-2">
-          Create First Habit
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const LoadingState = () => (
-    <View className="flex-1 items-center justify-center py-24">
-      <View
-        className="rounded-full p-5 mb-4"
-        style={{ backgroundColor: '#1C1C1F' }}
-      >
-        <MaterialDesignIcons
-          name="loading"
-          size={36}
-          color={colors.light_green}
-        />
-      </View>
-      <Text className="text-grey_text text-sm">Loading your habits…</Text>
-    </View>
-  );
 
   return (
     <View className="flex-1 bg-dark_bg">
@@ -135,15 +60,15 @@ const HabitsScreen = ({ navigation }: any) => {
             </Text>
           </View>
 
-          <TouchableOpacity
+          <Button
+            text="Add"
+            className="bg-light_green px-4 py-3 rounded-xl"
+            textClassName="text-black font-bold text-sm"
+            icon={
+              <MaterialDesignIcons name="plus" size={18} color={colors.black} />
+            }
             onPress={() => navigation.navigate('NewHabit')}
-            activeOpacity={0.85}
-            className="flex-row items-center px-4 py-3 rounded-xl"
-            style={{ backgroundColor: colors.light_green }}
-          >
-            <MaterialDesignIcons name="plus" size={18} color={colors.black} />
-            <Text className="text-black font-bold text-sm ml-1.5">Add</Text>
-          </TouchableOpacity>
+          />
         </View>
 
         {/* Summary strip */}
@@ -220,7 +145,7 @@ const HabitsScreen = ({ navigation }: any) => {
         {loading && habits.length === 0 ? (
           <LoadingState />
         ) : habits.length === 0 ? (
-          <EmptyState />
+          <EmptyState onPress={() => navigation.navigate('NewHabit')} />
         ) : (
           <View className="gap-y-3">
             {habits.map((habit: Habit) => {
@@ -237,7 +162,6 @@ const HabitsScreen = ({ navigation }: any) => {
                 >
                   <View className="p-4">
                     <View className="flex-row items-start">
-                      {/* Icon block */}
                       <View
                         className="rounded-xl p-3 mr-4"
                         style={{ backgroundColor: '#2a352b' }}
@@ -249,7 +173,6 @@ const HabitsScreen = ({ navigation }: any) => {
                         />
                       </View>
 
-                      {/* Content */}
                       <View className="flex-1">
                         <View className="flex-row items-center justify-between mb-1">
                           <Text
@@ -274,9 +197,7 @@ const HabitsScreen = ({ navigation }: any) => {
                           </Text>
                         ) : null}
 
-                        {/* Tags row */}
                         <View className="flex-row items-center flex-wrap gap-x-2 gap-y-1.5 mt-1">
-                          {/* Streak badge */}
                           <View
                             className="flex-row items-center px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: '#2a352b' }}
@@ -294,7 +215,6 @@ const HabitsScreen = ({ navigation }: any) => {
                             </Text>
                           </View>
 
-                          {/* Goal badge */}
                           {habit.goal ? (
                             <View
                               className="flex-row items-center px-2.5 py-1 rounded-full"
@@ -315,7 +235,6 @@ const HabitsScreen = ({ navigation }: any) => {
                             </View>
                           ) : null}
 
-                          {/* Date */}
                           <View className="flex-row items-center">
                             <MaterialDesignIcons
                               name="calendar-outline"
@@ -323,7 +242,7 @@ const HabitsScreen = ({ navigation }: any) => {
                               color={colors.grey_text}
                             />
                             <Text className="text-grey_text text-xs ml-1">
-                              {formatDate(habit.created_at)}
+                              {formatDate(habit.created_at, true)}
                             </Text>
                           </View>
                         </View>
