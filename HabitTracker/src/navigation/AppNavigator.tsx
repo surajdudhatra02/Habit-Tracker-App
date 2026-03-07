@@ -34,6 +34,11 @@ const AppNavigator = () => {
         component={RouteScreens[Routes.TodayHabits]}
         options={{ headerTitle: "Today's Habits" }}
       />
+      <Stack.Screen
+        name={Routes.Habits}
+        component={RouteScreens[Routes.Habits]}
+        options={{ headerTitle: 'Habits' }}
+      />
     </Stack.Navigator>
   );
 };

@@ -7,6 +7,7 @@ import ProgressScreen from './ProgressScreen';
 import SettingsScreen from './SettingsScreen';
 import NewHabitScreen from './NewHabitScreen';
 import TodayHabitsScreen from './TodayHabitsScreen';
+import HabitsScreen from './HabitsScreen';
 
 export {
   LoginScreen,
@@ -17,4 +18,5 @@ export {
   SettingsScreen,
   NewHabitScreen,
   TodayHabitsScreen,
+  HabitsScreen,
 };

@@ -14,12 +14,8 @@ type Props = CompositeScreenProps<
 >;
 
 const HomeScreen = ({ navigation }: Props) => {
-  const addIcon = (
-    <MaterialDesignIcons name="plus-circle-outline" size={18} color={colors.black} />
-  );
-
-  const toTodayHabit = () => navigation.navigate('TodayHabits')
-  const toNewHabitScreen = () => navigation.navigate('NewHabit')
+  const toTodayHabit = () => navigation.navigate('TodayHabits');
+  const toNewHabitScreen = () => navigation.navigate('NewHabit');
 
   return (
     <ScrollView
@@ -45,7 +41,11 @@ const HomeScreen = ({ navigation }: Props) => {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
               <View className="p-4 bg-light_grey rounded-xl mr-4">
-                <FontAwesome name="snowflake-o" size={30} color={colors.white} />
+                <FontAwesome
+                  name="snowflake-o"
+                  size={30}
+                  color={colors.white}
+                />
               </View>
 
               <View className="flex-1">
@@ -82,13 +82,32 @@ const HomeScreen = ({ navigation }: Props) => {
         </View>
 
         {/* Add Habit Button */}
-        <View className="mb-6">
+        <View className="mb-6 gap-4">
           <Button
-            icon={addIcon}
+            icon={
+              <MaterialDesignIcons
+                name="plus-circle-outline"
+                size={18}
+                color={colors.black}
+              />
+            }
             text="Add/Change Habit"
             className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center"
             textClassName="text-black font-bold text-base ml-2"
             onPress={toNewHabitScreen}
+          />
+          <Button
+            text="Habits"
+            className="rounded-xl border-light_green border px-6 py-4"
+            textClassName="text-light_green text-base font-bold"
+            onPress={() => navigation.navigate('Habits')}
+            icon={
+              <MaterialDesignIcons
+                name="format-list-bulleted"
+                size={18}
+                color={colors.light_green}
+              />
+            }
           />
         </View>
       </View>
