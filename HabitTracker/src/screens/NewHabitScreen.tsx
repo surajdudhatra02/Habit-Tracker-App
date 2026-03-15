@@ -25,7 +25,6 @@ const NewHabitScreen = ({ navigation, route }: any) => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
@@ -50,11 +49,9 @@ const NewHabitScreen = ({ navigation, route }: any) => {
         );
       });
     }
-  }, []);
+  }, [getHabitReminders]);
 
-  const handleAddReminder = () => {
-    setShowTimePicker(true);
-  };
+  const handleAddReminder = () => setShowTimePicker(true);
 
   const handleTimeSelected = (time: Date) => {
     const newReminder: Reminder = {
@@ -69,13 +66,12 @@ const NewHabitScreen = ({ navigation, route }: any) => {
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
     });
-  };
 
   const formatTimeForDB = (date: Date) => {
     const hours = date.getHours().toString().padStart(2, '0');
@@ -89,13 +85,11 @@ const NewHabitScreen = ({ navigation, route }: any) => {
       setShowErrorPopup(true);
       return;
     }
-
     if (reminders.length === 0) {
       setErrorMessage('Please add at least one reminder time.');
       setShowErrorPopup(true);
       return;
     }
-
     setShowConfirmPopup(true);
   };
 
@@ -125,7 +119,7 @@ const NewHabitScreen = ({ navigation, route }: any) => {
                 updated_at: new Date().toISOString(),
               };
               route.params?.onUpdate?.(updatedHabit);
-              navigation.goBack(); // just go back, no new screen pushed
+              navigation.goBack();
             },
           },
         ]);
@@ -151,19 +145,10 @@ const NewHabitScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const addIcon = (
-    <MaterialDesignIcons
-      name="plus-circle-outline"
-      size={18}
-      color={colors.off_white}
-    />
-  );
-
   return (
     <>
       <ScrollView className="bg-dark_bg flex-1">
         <View className="flex-1 p-6 gap-6">
-          {/* Habit Details */}
           <View className="gap-4">
             <Input
               placeholder="Enter Habit Name"
@@ -179,7 +164,6 @@ const NewHabitScreen = ({ navigation, route }: any) => {
             />
           </View>
 
-          {/* Reminders Section */}
           <View>
             <Text className="text-off_white text-2xl font-bold mb-4">
               Reminders
@@ -225,14 +209,19 @@ const NewHabitScreen = ({ navigation, route }: any) => {
 
             <Button
               text="Add time"
-              className="border-light_grey border-2 rounded-xl flex-row items-center justify-center py-3"
-              textClassName="text-off_white font-bold text-base ml-2"
-              icon={addIcon}
+              className="border-light_grey border-2 rounded-xl py-3"
+              textClassName="text-off_white font-bold text-base"
+              icon={
+                <MaterialDesignIcons
+                  name="plus-circle-outline"
+                  size={18}
+                  color={colors.off_white}
+                />
+              }
               onPress={handleAddReminder}
             />
           </View>
 
-          {/* Goals Section */}
           <View>
             <Text className="text-off_white text-2xl font-bold mb-4">
               Goals
@@ -245,7 +234,6 @@ const NewHabitScreen = ({ navigation, route }: any) => {
             />
           </View>
 
-          {/* Time Picker Modal */}
           {showTimePicker && (
             <TimePicker
               value={new Date()}
@@ -254,19 +242,12 @@ const NewHabitScreen = ({ navigation, route }: any) => {
             />
           )}
 
-          {/* Save Button */}
           <Button
-            text={
-              loading
-                ? isEditMode
-                  ? 'Updating…'
-                  : 'Saving…'
-                : isEditMode
-                ? 'Update Habit'
-                : 'Save Habit'
-            }
-            className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center mt-4"
+            text={isEditMode ? 'Update Habit' : 'Save Habit'}
+            className="bg-light_green px-6 py-4 rounded-xl mt-4"
             textClassName="text-black font-bold text-base"
+            loading={loading}
+            loadingColor={colors.black}
             onPress={validateAndShowConfirm}
           />
         </View>

@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Popup } from '../components';
 import { colors } from '../constants';
@@ -15,10 +15,24 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const loadReminders = async (habitId?: string) => {
-    const data = await getHabitReminders(habitId || habit.id);
-    setReminders(data);
-  };
+  const loadReminders = useCallback(
+    async (habitId?: string) => {
+      const data = await getHabitReminders(habitId || habit.id);
+      setReminders(data);
+    },
+    [getHabitReminders, habit.id],
+  );
+
+  useEffect(() => {
+    loadReminders();
+  }, [loadReminders]);
+
+  useEffect(() => {
+    if (route.params?.habit) {
+      setHabit(route.params.habit);
+      loadReminders(route.params.habit.id);
+    }
+  }, [route.params?.habit, loadReminders]);
 
   const handleDelete = async () => {
     setDeleting(true);

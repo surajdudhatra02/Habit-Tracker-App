@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
@@ -20,9 +20,9 @@ const HabitsScreen = ({ navigation }: any) => {
 
   // Auto refresh every time screen comes into focus
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchHabits();
-    }, []),
+    }, [fetchHabits]),
   );
 
   const onRefresh = async () => {
