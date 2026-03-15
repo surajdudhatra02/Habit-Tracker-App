@@ -1,61 +1,117 @@
-import { View, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { CheckboxCard } from '../components';
-
-const TodaysHabit = [
-  {
-    id: 'Water',
-    icon: 'water',
-    description: 'Stay hydrated throughout the day.',
-    label: 'Water',
-    time: '8:00 AM, 12:00 PM, 4:00 PM',
-    goal: '8 glasses per day'
-  },
-  {
-    id: 'Meditation',
-    icon: 'meditation',
-    description: '10 minutes of mindfulness.',
-    label: 'Meditation',
-    time: '7:00 AM',
-    goal: 'Daily streak'
-  },
-  {
-    id: 'Read',
-    icon: 'book-open-blank-variant-outline',
-    description: 'Finish one chapter of a book.',
-    label: 'Read',
-    time: '9:00 PM',
-    goal: '30 pages this week'
-  },
-];
+import { useHabits } from '../hooks';
+import { Habit } from '../types';
+import { colors } from '../constants';
 
 const TodayHabitsScreen = () => {
-  const [habits, setHabits] = useState({
-    drinkWater: false,
-    meditate: false,
-    read: false,
-  });
+  const { habits, fetchHabits, getTodayCompletions, toggleCompletion } =
+    useHabits();
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set());
 
-  const handleHabitChange = (key: keyof typeof habits) => (value: boolean) => {
-    setHabits(prev => ({ ...prev, [key]: value }));
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchHabits();
+      loadCompletions();
+    }, []),
+  );
+
+  const loadCompletions = async () => {
+    const completions = await getTodayCompletions();
+    setCompletedIds(new Set(completions.map(c => c.habit_id)));
   };
+
+  const handleToggle = async (habitId: string, value: boolean) => {
+    // Prevent double tap
+    if (togglingIds.has(habitId)) return;
+
+    // Optimistic update
+    setCompletedIds(prev => {
+      const next = new Set(prev);
+      value ? next.add(habitId) : next.delete(habitId);
+      return next;
+    });
+
+    try {
+      await toggleCompletion(habitId, value);
+    } catch {
+      // Revert
+      setCompletedIds(prev => {
+        const next = new Set(prev);
+        value ? next.delete(habitId) : next.add(habitId);
+        return next;
+      });
+    } finally {
+      setTogglingIds(prev => {
+        const next = new Set(prev);
+        next.delete(habitId);
+        return next;
+      });
+    }
+  };
+
+  const completed = habits.filter(h => completedIds.has(h.id)).length;
+  const total = habits.length;
 
   return (
     <ScrollView className="bg-dark_bg flex-1">
       <View className="flex-1 p-6 gap-6">
-        {TodaysHabit.map((habit, index) => (
-          <View className="bg-dark_grey rounded-xl p-4" key={habit.id}>
-            <CheckboxCard
-              icon={habit.icon}
-              label={habit.label}
-              description={habit.description}
-              time={habit.time}
-              goal={habit.goal}
-              checked={habits[habit.id]}
-              onValueChange={handleHabitChange(habit.id)}
+        {/* Header */}
+        <View>
+          <Text
+            className="text-3xl font-bold"
+            style={{ color: colors.light_green }}
+          >
+            Today
+          </Text>
+          <Text className="text-grey_text text-sm mt-1">
+            {completed}/{total} habits completed
+          </Text>
+        </View>
+
+        {/* Progress bar */}
+        {total > 0 && (
+          <View className="h-2 bg-dark_grey rounded-full overflow-hidden">
+            <View
+              className="h-2 rounded-full"
+              style={{
+                backgroundColor: colors.light_green,
+                width: `${(completed / total) * 100}%`,
+              }}
             />
           </View>
-        ))}
+        )}
+
+        {/* Habits list */}
+        {habits.length === 0 ? (
+          <View className="items-center py-16">
+            <Text className="text-grey_text text-sm text-center">
+              No habits yet. Create one to get started!
+            </Text>
+          </View>
+        ) : (
+          habits.map((habit: Habit) => (
+            <View
+              key={habit.id}
+              className="bg-dark_grey rounded-xl p-4"
+              style={completedIds.has(habit.id) ? { opacity: 0.6 } : {}}
+              pointerEvents={togglingIds.has(habit.id) ? 'none' : 'auto'}
+            >
+              <CheckboxCard
+                icon="repeat"
+                label={habit.name}
+                description={habit.description}
+                time="Daily"
+                goal={habit.goal}
+                checked={completedIds.has(habit.id)}
+                onValueChange={value => handleToggle(habit.id, value)}
+              />
+            </View>
+          ))
+        )}
       </View>
     </ScrollView>
   );

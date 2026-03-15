@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
-import { CreateHabitInput, Habit, HabitReminder } from '../types';
+import {
+  CreateHabitInput,
+  Habit,
+  HabitCompletion,
+  HabitReminder,
+} from '../types';
 import { supabase } from '../lib/supabase';
 
 export const useHabits = () => {
@@ -150,6 +155,51 @@ export const useHabits = () => {
     }
   };
 
+  const getTodayCompletions = async (): Promise<HabitCompletion[]> => {
+    if (!user) return [];
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('completed_at', today);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error: any) {
+      console.error('Error fetching completions:', error.message);
+      return [];
+    }
+  };
+
+  const toggleCompletion = async (habitId: string, completed: boolean) => {
+    if (!user) return;
+    try {
+      const today = new Date().toISOString().split('T')[0];
+
+      if (completed) {
+        // Mark as done — insert
+        const { error } = await supabase
+          .from('habit_completions')
+          .insert({ habit_id: habitId, user_id: user.id, completed_at: today });
+        if (error) throw error;
+      } else {
+        // Unmark — delete
+        const { error } = await supabase
+          .from('habit_completions')
+          .delete()
+          .eq('habit_id', habitId)
+          .eq('user_id', user.id)
+          .eq('completed_at', today);
+        if (error) throw error;
+      }
+    } catch (error: any) {
+      console.error('Error toggling completion:', error.message);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchHabits();
@@ -164,5 +214,7 @@ export const useHabits = () => {
     deleteHabit,
     fetchHabits,
     getHabitReminders,
+    getTodayCompletions,
+    toggleCompletion,
   };
 };
