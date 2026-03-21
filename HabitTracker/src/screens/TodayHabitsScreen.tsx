@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Alert } from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { CheckboxCard } from '../components';
+import { CheckboxCard, LoadingState } from '../components';
 import { useHabits } from '../hooks';
 import { Habit } from '../types';
 import { colors } from '../constants';
@@ -109,9 +109,7 @@ const TodayHabitsScreen = () => {
 
         {isLoading ? (
           <View className="items-center py-16">
-            <Text className="text-sm text-center text-grey_text">
-              Loading habits...
-            </Text>
+            <LoadingState />
           </View>
         ) : habits.length === 0 ? (
           <View className="items-center py-16">
