@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Popup } from '../components';
@@ -6,6 +6,7 @@ import { colors } from '../constants';
 import { useHabits } from '../hooks';
 import { Habit, HabitReminder } from '../types';
 import { formatDate, formatTime, daysSince } from '../utils';
+import { showErrorToast } from '../utils/toast';
 
 const HabitDetailsScreen = ({ route, navigation }: any) => {
   const { deleteHabit, getHabitReminders } = useHabits();
@@ -40,7 +41,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
       await deleteHabit(habit.id);
       navigation.goBack();
     } catch {
-      Alert.alert('Error', 'Failed to delete habit. Please try again.');
+      showErrorToast('Error', 'Failed to delete habit. Please try again.');
     } finally {
       setDeleting(false);
       setShowDeletePopup(false);

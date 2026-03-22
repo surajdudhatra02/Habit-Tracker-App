@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { Button, Divider, Input, Popup, TimePicker } from '../components';
+import { Button, Divider, Input, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabits } from '../hooks';
 import { Habit } from '../types';
+import { showErrorToast, showSuccessToast } from '../utils/toast';
 
 type Reminder = {
   id: string;
@@ -25,9 +26,6 @@ const NewHabitScreen = ({ navigation, route }: any) => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -79,18 +77,22 @@ const NewHabitScreen = ({ navigation, route }: any) => {
     return `${hours}:${minutes}`;
   };
 
-  const validateAndShowConfirm = () => {
+  const validateAndSave = () => {
     if (!habitName.trim()) {
-      setErrorMessage('Please enter a habit name to continue.');
-      setShowErrorPopup(true);
+      showErrorToast(
+        'Validation Error',
+        'Please enter a habit name to continue.',
+      );
       return;
     }
     if (reminders.length === 0) {
-      setErrorMessage('Please add at least one reminder time.');
-      setShowErrorPopup(true);
+      showErrorToast(
+        'Validation Error',
+        'Please add at least one reminder time.',
+      );
       return;
     }
-    setShowConfirmPopup(true);
+    handleSave();
   };
 
   const handleSave = async () => {
@@ -105,24 +107,17 @@ const NewHabitScreen = ({ navigation, route }: any) => {
           goal: goal.trim() || undefined,
           reminders: reminderTimes,
         });
-        setShowConfirmPopup(false);
-        Alert.alert('Updated', 'Habit updated successfully!', [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Call the callback to update Details screen directly
-              const updatedHabit = {
-                ...existingHabit,
-                name: habitName.trim(),
-                description: description.trim() || undefined,
-                goal: goal.trim() || undefined,
-                updated_at: new Date().toISOString(),
-              };
-              route.params?.onUpdate?.(updatedHabit);
-              navigation.goBack();
-            },
-          },
-        ]);
+        showSuccessToast('Updated', 'Habit updated successfully!');
+
+        const updatedHabit = {
+          ...existingHabit,
+          name: habitName.trim(),
+          description: description.trim() || undefined,
+          goal: goal.trim() || undefined,
+          updated_at: new Date().toISOString(),
+        };
+        route.params?.onUpdate?.(updatedHabit);
+        navigation.goBack();
       } else {
         await createHabit({
           name: habitName.trim(),
@@ -130,16 +125,12 @@ const NewHabitScreen = ({ navigation, route }: any) => {
           goal: goal.trim() || undefined,
           reminders: reminderTimes,
         });
-        setShowConfirmPopup(false);
-        Alert.alert('Success', 'Habit created successfully!', [
-          { text: 'OK', onPress: () => navigation.goBack() },
-        ]);
+        showSuccessToast('Success', 'Habit created successfully!');
+        navigation.goBack();
       }
     } catch (error: any) {
       console.error('Error saving habit:', error);
-      setShowConfirmPopup(false);
-      setErrorMessage('Failed to save habit. Please try again.');
-      setShowErrorPopup(true);
+      showErrorToast('Error', 'Failed to save habit. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -248,34 +239,9 @@ const NewHabitScreen = ({ navigation, route }: any) => {
             textClassName="text-black font-bold text-base"
             loading={loading}
             loadingColor={colors.black}
-            onPress={validateAndShowConfirm}
+            onPress={validateAndSave}
           />
         </View>
-
-        <Popup
-          visible={showErrorPopup}
-          type="error"
-          title="Oops!"
-          message={errorMessage}
-          confirmText="Got it"
-          onConfirm={() => setShowErrorPopup(false)}
-        />
-
-        <Popup
-          visible={showConfirmPopup}
-          type="warning"
-          title={isEditMode ? 'Update Habit?' : 'Save Habit?'}
-          message={
-            isEditMode
-              ? `Save changes to "${habitName.trim()}"?`
-              : 'Are you sure you want to save this habit?'
-          }
-          showCancel={true}
-          confirmText={isEditMode ? 'Yes, Update' : 'Yes, Save'}
-          cancelText="Cancel"
-          onConfirm={handleSave}
-          onCancel={() => setShowConfirmPopup(false)}
-        />
       </ScrollView>
     </>
   );

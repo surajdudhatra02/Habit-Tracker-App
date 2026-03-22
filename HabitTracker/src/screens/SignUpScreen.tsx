@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useAuthActions } from '../hooks';
 import { Routes } from '../navigation/route';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Button, Input } from '../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { showErrorToast, showSuccessToast } from '../utils/toast';
 
 const SignUpScreen = ({ navigation }) => {
   const { signUpWithEmail, loginWithGoogle } = useAuthActions();
@@ -25,12 +26,12 @@ const SignUpScreen = ({ navigation }) => {
     }
 
     if (trimmedPassword !== trimmedConfirm) {
-      Alert.alert('Password Mismatch', 'Passwords do not match');
+      showErrorToast('Password Mismatch', 'Passwords do not match');
       return;
     }
 
     if (trimmedPassword.length < 6) {
-      Alert.alert(
+      showErrorToast(
         'Weak Password',
         'Password must be at least 6 characters long',
       );
@@ -47,7 +48,7 @@ const SignUpScreen = ({ navigation }) => {
           email: trimmedEmail,
         });
       } else {
-        Alert.alert('Success', 'Account created successfully!');
+        showSuccessToast('Success', 'Account created successfully!');
       }
     } catch (err: any) {
       console.log(err.message);

@@ -6,6 +6,8 @@ import {
   formatDate,
   formatTime,
 } from './habitUtils';
+import { toastConfig } from './toastConfig';
+import * as toastUtils from './toast';
 
 export {
   validateEmail,
@@ -15,4 +17,6 @@ export {
   daysSince,
   formatDate,
   formatTime,
+  toastConfig,
+  toastUtils,
 };

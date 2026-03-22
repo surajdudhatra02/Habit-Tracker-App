@@ -5,6 +5,8 @@ import './global.css';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from './src/context';
 import RootNavigator from './src/navigation/RootNavigator';
+import Toast from 'react-native-toast-message';
+import { toastConfig } from './src/utils';
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
           <RootNavigator />
         </NavigationContainer>
       </AuthProvider>
+      <Toast config={toastConfig} />
     </SafeAreaProvider>
   );
 }

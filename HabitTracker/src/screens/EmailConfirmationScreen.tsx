@@ -1,9 +1,11 @@
-import { View, Text, Alert } from 'react-native';
+import { View, Text } from 'react-native';
 import React, { useState } from 'react';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components';
 import { Routes } from '../navigation/route';
 import { useAuthActions } from '../hooks';
+import { showErrorToast, showSuccessToast } from '../utils/toast';
 
 const EmailConfirmationScreen = ({ navigation, route }) => {
   const { email } = route.params;
@@ -14,12 +16,12 @@ const EmailConfirmationScreen = ({ navigation, route }) => {
     setLoading(true);
     try {
       await resendConfirmationEmail(email);
-      Alert.alert(
+      showSuccessToast(
         'Email Sent',
         'Verification email has been sent. Please check your inbox.',
       );
-    } catch (err) {
-      Alert.alert('Error', err.message);
+    } catch (err: any) {
+      showErrorToast('Error', err.message);
     } finally {
       setLoading(false);
     }

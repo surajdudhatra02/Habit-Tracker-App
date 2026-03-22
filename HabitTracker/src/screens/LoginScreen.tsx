@@ -1,10 +1,11 @@
-import { View, Text, Linking, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Input } from '../components';
+import { Button, Input, Popup } from '../components';
 import { Routes } from '../navigation/route';
 import { useAuthActions } from '../hooks';
 import { validateEmail } from '../utils';
+import { showErrorToast } from '../utils/toast';
 
 const login = () => {
   // console.log('login');
@@ -16,33 +17,24 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showResendPopup, setShowResendPopup] = useState(false);
 
   const onLogin = async () => {
     const trimmedEmail = email.trim().toLowerCase();
 
     if (!validateEmail(trimmedEmail)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      showErrorToast('Invalid Email', 'Please enter a valid email address');
       return;
     }
-    
+
     setLoading(true);
     try {
       await loginWithEmail(email.trim(), password.trim());
     } catch (err: any) {
-      if (err.message.include('Email not confirmed')) {
-        Alert.alert(
-          'Email Not Verified',
-          'Please verify your email address before logging in.',
-          [
-            { text: 'OK' },
-            {
-              text: 'Resend Email',
-              onPress: () => {
-                navigation.navigate(Routes.EmailConfirm, { email });
-              },
-            },
-          ],
-        );
+      if (err.message.includes('Email not confirmed')) {
+        setShowResendPopup(true);
+      } else {
+        showErrorToast('Login Failed', err.message);
       }
     } finally {
       setLoading(false);
@@ -94,6 +86,21 @@ const LoginScreen = ({ navigation }) => {
           <Text className="text-sm text-off_white">Sign Up</Text>
         </TouchableOpacity>
       </View>
+
+      <Popup
+        visible={showResendPopup}
+        type="warning"
+        title="Email Not Verified"
+        message="Please verify your email address before logging in."
+        confirmText="Resend Email"
+        showCancel={true}
+        cancelText="OK"
+        onConfirm={() => {
+          setShowResendPopup(false);
+          navigation.navigate(Routes.EmailConfirm, { email });
+        }}
+        onCancel={() => setShowResendPopup(false)}
+      />
     </SafeAreaView>
   );
 };

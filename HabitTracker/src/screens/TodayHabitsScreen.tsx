@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { CheckboxCard, LoadingState } from '../components';
 import { useHabits } from '../hooks';
 import { Habit } from '../types';
 import { colors } from '../constants';
+import { showErrorToast } from '../utils/toast';
 
 const TodayHabitsScreen = () => {
   const { habits, fetchHabits, getTodayCompletions, toggleCompletion } =
@@ -26,7 +27,7 @@ const TodayHabitsScreen = () => {
       setCompletedIds(new Set(completions.map(c => c.habit_id)));
     } catch (error) {
       console.error('Failed to load today habits screen data:', error);
-      Alert.alert('Error', 'Unable to load habits. Please try again.');
+      showErrorToast('Error', 'Unable to load habits. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +61,7 @@ const TodayHabitsScreen = () => {
           value ? next.delete(habitId) : next.add(habitId);
           return next;
         });
-        Alert.alert('Error', 'Unable to update habit. Please try again.');
+        showErrorToast('Error', 'Unable to update habit. Please try again.');
       } finally {
         togglingIdsRef.current.delete(habitId);
         setTogglingIds(prev => {
