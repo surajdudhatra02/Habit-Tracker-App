@@ -3,13 +3,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Popup } from '../components';
 import { colors } from '../constants';
-import { useHabits } from '../hooks';
+import { useHabitStore } from '../store';
 import { Habit, HabitReminder } from '../types';
 import { formatDate, formatTime, daysSince } from '../utils';
 import { showErrorToast } from '../utils/toast';
 
 const HabitDetailsScreen = ({ route, navigation }: any) => {
-  const { deleteHabit, getHabitReminders } = useHabits();
+  const deleteHabit = useHabitStore(s => s.deleteHabit);
+  const getHabitReminders = useHabitStore(s => s.getHabitReminders);
 
   const [habit, setHabit] = useState<Habit>(route.params.habit);
   const [reminders, setReminders] = useState<HabitReminder[]>([]);

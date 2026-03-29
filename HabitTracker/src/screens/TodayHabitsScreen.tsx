@@ -2,14 +2,16 @@ import { View, Text, ScrollView } from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { CheckboxCard, LoadingState } from '../components';
-import { useHabits } from '../hooks';
+import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { colors } from '../constants';
 import { showErrorToast } from '../utils/toast';
 
 const TodayHabitsScreen = () => {
-  const { habits, fetchHabits, getTodayCompletions, toggleCompletion } =
-    useHabits();
+  const habits = useHabitStore(s => s.habits);
+  const fetchHabits = useHabitStore(s => s.fetchHabits);
+  const getTodayCompletions = useHabitStore(s => s.getTodayCompletions);
+  const toggleCompletion = useHabitStore(s => s.toggleCompletion);
 
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set());

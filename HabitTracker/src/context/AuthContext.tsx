@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { supabase } from '../lib/supabase';
 import { useDeepLink } from '../hooks';
+import { useHabitStore } from '../store';
 
 type AuthContextType = {
   user: User | null;
@@ -37,16 +38,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
+      const currentUser = data.session?.user ?? null;
       setSession(data.session);
-      setUser(data.session?.user ?? null);
+      setUser(currentUser);
+      useHabitStore.getState().setUserId(currentUser?.id ?? null);
       setLoading(false);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
       setSession(session);
-      setUser(session?.user ?? null);
+      setUser(currentUser);
+      useHabitStore.getState().setUserId(currentUser?.id ?? null);
     });
 
     return () => {

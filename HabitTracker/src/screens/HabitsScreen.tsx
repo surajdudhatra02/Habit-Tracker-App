@@ -9,7 +9,7 @@ import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
-import { useHabits } from '../hooks';
+import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { Button, EmptyState, LoadingState } from '../components';
 import { getHabitIcon, daysSince, formatDate } from '../utils';
@@ -19,7 +19,10 @@ import { RootStackParamList, Routes } from '../navigation/route';
 type Props = NativeStackScreenProps<RootStackParamList, Routes.Habits>;
 
 const HabitsScreen = ({ navigation }: Props) => {
-  const { habits, loading, fetchHabits } = useHabits();
+  const habits = useHabitStore(s => s.habits);
+  const loading = useHabitStore(s => s.loading);
+  const fetchHabits = useHabitStore(s => s.fetchHabits);
+  
   const [refreshing, setRefreshing] = useState(false);
 
   // Auto refresh every time screen comes into focus

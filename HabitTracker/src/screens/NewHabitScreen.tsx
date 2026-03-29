@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Divider, Input, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
-import { useHabits } from '../hooks';
+import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
 
@@ -21,7 +21,9 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
   const existingHabit: Habit | undefined = route?.params?.habit;
   const isEditMode = !!existingHabit;
 
-  const { createHabit, updateHabit, getHabitReminders } = useHabits();
+  const createHabit = useHabitStore(s => s.createHabit);
+  const updateHabit = useHabitStore(s => s.updateHabit);
+  const getHabitReminders = useHabitStore(s => s.getHabitReminders);
 
   const [habitName, setHabitName] = useState(existingHabit?.name || '');
   const [description, setDescription] = useState(
