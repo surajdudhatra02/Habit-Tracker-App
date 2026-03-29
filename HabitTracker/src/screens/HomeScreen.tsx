@@ -1,12 +1,14 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
-import { View, Text, ScrollView } from 'react-native';
+import { useMemo } from 'react';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Button, HomeBarChart, SuccessRate } from '../components';
 import { MainTabParamList, RootStackParamList } from '../navigation';
 import { colors } from '../constants';
+import { useHabitCompletionRange } from '../hooks';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -16,6 +18,19 @@ type Props = CompositeScreenProps<
 const HomeScreen = ({ navigation }: Props) => {
   const toTodayHabit = () => navigation.navigate('TodayHabits');
   const toNewHabitScreen = () => navigation.navigate('NewHabit');
+
+  // Last 7 days — weekly count
+  const { startDate, endDate } = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 6);
+    return { startDate: start, endDate: end };
+  }, []);
+
+  const { data, averageRate, loading } = useHabitCompletionRange({
+    startDate,
+    endDate,
+  });
 
   return (
     <ScrollView
@@ -70,15 +85,23 @@ const HomeScreen = ({ navigation }: Props) => {
         {/* Progress Section */}
         <View className="mb-6">
           <Text className="text-off_white text-2xl font-bold mb-4">
-            Progress
+            Weekly Progress
           </Text>
 
           <View className="bg-dark_grey p-4 rounded-xl">
-            <HomeBarChart />
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.light_green}
+                className="py-8"
+              />
+            ) : (
+              <HomeBarChart data={data} />
+            )}
           </View>
 
           {/* Success Rate Box */}
-          <SuccessRate percentage={85} />
+          <SuccessRate percentage={averageRate} />
         </View>
 
         {/* Add Habit Button */}

@@ -6,11 +6,11 @@ import { colors } from '../constants';
 import { useHabitCompletionRange, CompletionDay } from '../hooks';
 
 const ProgressScreen = () => {
-  // --- Weekly Trend (last 7 days) ---
+  // --- Monthly Trend (last 30 days) ---
   const { startDate, endDate } = useMemo(() => {
     const end = new Date();
     const start = new Date();
-    start.setDate(end.getDate() - 6);
+    start.setDate(end.getDate() - 29);
     return { startDate: start, endDate: end };
   }, []);
 
@@ -82,10 +82,10 @@ const ProgressScreen = () => {
           </View>
         </View>
 
-        {/* Weekly Trend - Chart */}
+        {/* Monthly Trend - Chart */}
         <View className="mb-6">
           <Text className="text-off_white text-2xl font-bold mb-4">
-            Weekly Trend
+            Monthly Trend
           </Text>
 
           <View className="bg-dark_grey p-4 rounded-xl">
@@ -102,7 +102,7 @@ const ProgressScreen = () => {
                   {averageRate}%
                 </Text>
                 <View className="flex-row items-center gap-5">
-                  <Text className="text-grey_text text-xl">Last 7 Days</Text>
+                  <Text className="text-grey_text text-xl">Last 30 Days</Text>
                   <View className="flex-row items-center gap-1">
                     <MaterialDesignIcons
                       name={trend >= 0 ? 'trending-up' : 'trending-down'}
