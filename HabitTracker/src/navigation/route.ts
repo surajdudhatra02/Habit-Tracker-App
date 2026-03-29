@@ -56,7 +56,12 @@ export type RootStackParamList = {
   [Routes.Home]: undefined;
   [Routes.Progress]: undefined;
   [Routes.Settings]: undefined;
-  [Routes.NewHabit]: { habit?: import('../types').Habit } | undefined;
+  [Routes.NewHabit]:
+    | {
+        habit?: import('../types').Habit;
+        onUpdate?: (habit: import('../types').Habit) => void;
+      }
+    | undefined;
   [Routes.TodayHabits]: undefined;
   [Routes.Habits]: undefined;
   [Routes.HabitDetails]: { habit: import('../types').Habit };

@@ -7,8 +7,10 @@ import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Button, HomeBarChart, SuccessRate } from '../components';
 import { MainTabParamList, RootStackParamList } from '../navigation';
+import { Routes } from '../navigation/route';
 import { colors } from '../constants';
 import { useHabitCompletionRange } from '../hooks';
+import { getDateRange } from '../utils';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -16,16 +18,11 @@ type Props = CompositeScreenProps<
 >;
 
 const HomeScreen = ({ navigation }: Props) => {
-  const toTodayHabit = () => navigation.navigate('TodayHabits');
-  const toNewHabitScreen = () => navigation.navigate('NewHabit');
+  const toTodayHabit = () => navigation.navigate(Routes.TodayHabits);
+  const toNewHabitScreen = () => navigation.navigate(Routes.NewHabit);
 
   // Last 7 days — weekly count
-  const { startDate, endDate } = useMemo(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 6);
-    return { startDate: start, endDate: end };
-  }, []);
+  const { startDate, endDate } = useMemo(() => getDateRange(6), []);
 
   const { data, averageRate, loading } = useHabitCompletionRange({
     startDate,
@@ -123,7 +120,7 @@ const HomeScreen = ({ navigation }: Props) => {
             text="Habits"
             className="rounded-xl border-light_green border px-6 py-4"
             textClassName="text-light_green text-base font-bold"
-            onPress={() => navigation.navigate('Habits')}
+            onPress={() => navigation.navigate(Routes.Habits)}
             icon={
               <MaterialDesignIcons
                 name="format-list-bulleted"

@@ -13,8 +13,12 @@ import { useHabits } from '../hooks';
 import { Habit } from '../types';
 import { Button, EmptyState, LoadingState } from '../components';
 import { getHabitIcon, daysSince, formatDate } from '../utils';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList, Routes } from '../navigation/route';
 
-const HabitsScreen = ({ navigation }: any) => {
+type Props = NativeStackScreenProps<RootStackParamList, Routes.Habits>;
+
+const HabitsScreen = ({ navigation }: Props) => {
   const { habits, loading, fetchHabits } = useHabits();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -41,7 +45,7 @@ const HabitsScreen = ({ navigation }: any) => {
       {/* ── Header ── */}
       <View
         className="px-6 pt-5 pb-4"
-        style={{ borderBottomColor: '#2a2a2d', borderBottomWidth: 1 }}
+        style={{ borderBottomColor: colors.card_border, borderBottomWidth: 1 }}
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1 mr-4">
@@ -67,7 +71,7 @@ const HabitsScreen = ({ navigation }: any) => {
             icon={
               <MaterialDesignIcons name="plus" size={18} color={colors.black} />
             }
-            onPress={() => navigation.navigate('NewHabit')}
+            onPress={() => navigation.navigate(Routes.NewHabit)}
           />
         </View>
 
@@ -76,7 +80,7 @@ const HabitsScreen = ({ navigation }: any) => {
           <View className="flex-row mt-4 gap-x-3">
             <View
               className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: '#1C1C1F' }}
+              style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
                 name="fire"
@@ -93,7 +97,7 @@ const HabitsScreen = ({ navigation }: any) => {
 
             <View
               className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: '#1C1C1F' }}
+              style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
                 name="calendar-check"
@@ -104,13 +108,13 @@ const HabitsScreen = ({ navigation }: any) => {
                 <Text className="text-off_white text-sm font-bold">
                   {Math.max(...habits.map(h => daysSince(h.created_at)), 0)}d
                 </Text>
-                <Text className="text-grey_text text-xs">Longest</Text>
+                <Text className="text-grey_text text-xs">Oldest</Text>
               </View>
             </View>
 
             <View
               className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: '#1C1C1F' }}
+              style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
                 name="star-outline"
@@ -145,7 +149,7 @@ const HabitsScreen = ({ navigation }: any) => {
         {loading && habits.length === 0 ? (
           <LoadingState />
         ) : habits.length === 0 ? (
-          <EmptyState onPress={() => navigation.navigate('NewHabit')} />
+          <EmptyState onPress={() => navigation.navigate(Routes.NewHabit)} />
         ) : (
           <View className="gap-y-3">
             {habits.map((habit: Habit) => {
@@ -155,16 +159,18 @@ const HabitsScreen = ({ navigation }: any) => {
               return (
                 <TouchableOpacity
                   key={habit.id}
-                  onPress={() => navigation.navigate('HabitDetails', { habit })}
+                  onPress={() =>
+                    navigation.navigate(Routes.HabitDetails, { habit })
+                  }
                   activeOpacity={0.75}
                   className="rounded-2xl overflow-hidden"
-                  style={{ backgroundColor: '#1C1C1F' }}
+                  style={{ backgroundColor: colors.dark_grey }}
                 >
                   <View className="p-4">
                     <View className="flex-row items-start">
                       <View
                         className="rounded-xl p-3 mr-4"
-                        style={{ backgroundColor: '#2a352b' }}
+                        style={{ backgroundColor: colors.icon_bg }}
                       >
                         <MaterialDesignIcons
                           name={icon as any}
@@ -200,7 +206,7 @@ const HabitsScreen = ({ navigation }: any) => {
                         <View className="flex-row items-center flex-wrap gap-x-2 gap-y-1.5 mt-1">
                           <View
                             className="flex-row items-center px-2.5 py-1 rounded-full"
-                            style={{ backgroundColor: '#2a352b' }}
+                            style={{ backgroundColor: colors.icon_bg }}
                           >
                             <MaterialDesignIcons
                               name="fire"
@@ -218,7 +224,7 @@ const HabitsScreen = ({ navigation }: any) => {
                           {habit.goal ? (
                             <View
                               className="flex-row items-center px-2.5 py-1 rounded-full"
-                              style={{ backgroundColor: '#252535' }}
+                              style={{ backgroundColor: colors.goal_bg }}
                             >
                               <MaterialDesignIcons
                                 name="flag-outline"

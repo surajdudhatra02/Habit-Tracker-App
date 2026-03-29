@@ -16,6 +16,11 @@ interface UseHabitCompletionRangeOptions {
   endDate: Date;
 }
 
+const toDateString = (d: Date) => {
+  if (!(d instanceof Date) || isNaN(d.getTime())) return '';
+  return d.toISOString().split('T')[0];
+};
+
 export const useHabitCompletionRange = ({
   startDate,
   endDate,
@@ -26,7 +31,8 @@ export const useHabitCompletionRange = ({
   const [averageRate, setAverageRate] = useState(0);
   const [trend, setTrend] = useState(0); // positive = improving, negative = declining
 
-  const toDateString = (d: Date) => d.toISOString().split('T')[0];
+  const startStr = toDateString(startDate);
+  const endStr = toDateString(endDate);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -36,8 +42,8 @@ export const useHabitCompletionRange = ({
         'get_habit_completion_by_range',
         {
           p_user_id: user.id,
-          p_start_date: toDateString(startDate),
-          p_end_date: toDateString(endDate),
+          p_start_date: startStr,
+          p_end_date: endStr,
         },
       );
       if (error) throw error;
@@ -75,7 +81,7 @@ export const useHabitCompletionRange = ({
     } finally {
       setLoading(false);
     }
-  }, [user, startDate, endDate]);
+  }, [user, startStr, endStr]);
 
   useEffect(() => {
     fetchData();

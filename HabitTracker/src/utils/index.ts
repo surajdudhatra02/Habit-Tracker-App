@@ -8,6 +8,7 @@ import {
 } from './habitUtils';
 import { toastConfig } from './toastConfig';
 import * as toastUtils from './toast';
+import { getDateRange } from './dateUtils';
 
 export {
   validateEmail,
@@ -19,4 +20,5 @@ export {
   formatTime,
   toastConfig,
   toastUtils,
+  getDateRange,
 };

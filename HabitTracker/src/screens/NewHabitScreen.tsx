@@ -7,12 +7,17 @@ import { useHabits } from '../hooks';
 import { Habit } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
 
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList, Routes } from '../navigation/route';
+
 type Reminder = {
   id: string;
   time: Date;
 };
 
-const NewHabitScreen = ({ navigation, route }: any) => {
+type Props = NativeStackScreenProps<RootStackParamList, Routes.NewHabit>;
+
+const NewHabitScreen = ({ navigation, route }: Props) => {
   const existingHabit: Habit | undefined = route?.params?.habit;
   const isEditMode = !!existingHabit;
 
@@ -53,7 +58,9 @@ const NewHabitScreen = ({ navigation, route }: any) => {
 
   const handleTimeSelected = (time: Date) => {
     const newReminder: Reminder = {
-      id: `reminder_${Date.now()}`,
+      id: `reminder_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 9)}`,
       time,
     };
     setReminders(prev => [...prev, newReminder]);

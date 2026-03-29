@@ -12,4 +12,7 @@ export const colors = {
   black: '#000',
   red: '#FF5A5F',
   yellow: '#FFC107',
+  card_border: '#2a2a2d',
+  icon_bg: '#2a352b',
+  goal_bg: '#252535',
 };

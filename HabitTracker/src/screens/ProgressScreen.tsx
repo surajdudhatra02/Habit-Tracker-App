@@ -4,15 +4,11 @@ import { Button, CalendarComponent, ProgressCurveChart } from '../components';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabitCompletionRange, CompletionDay } from '../hooks';
+import { getDateRange } from '../utils';
 
 const ProgressScreen = () => {
   // --- Monthly Trend (last 30 days) ---
-  const { startDate, endDate } = useMemo(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 29);
-    return { startDate: start, endDate: end };
-  }, []);
+  const { startDate, endDate } = useMemo(() => getDateRange(29), []);
 
   const { data, averageRate, trend, loading } = useHabitCompletionRange({
     startDate,

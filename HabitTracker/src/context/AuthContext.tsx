@@ -1,5 +1,11 @@
 import { Session, User } from '@supabase/supabase-js';
-import { createContext, ReactNode, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { supabase } from '../lib/supabase';
 import { useDeepLink } from '../hooks';
 
@@ -24,10 +30,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw new Error(error.message);
-  };
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
