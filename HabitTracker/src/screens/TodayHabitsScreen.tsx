@@ -127,7 +127,7 @@ const TodayHabitsScreen = () => {
             return (
               <View
                 key={habit.id}
-                className="rounded-xl bg-dark_grey p-4"
+                className="rounded-2xl bg-dark_grey p-4"
                 style={isCompleted ? { opacity: 0.6 } : undefined}
                 pointerEvents={isToggling ? 'none' : 'auto'}
               >

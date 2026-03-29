@@ -68,7 +68,7 @@ const ProgressScreen = () => {
             Daily Completion
           </Text>
 
-          <View className="bg-dark_grey p-4 rounded-xl">
+          <View className="bg-dark_grey p-4 rounded-2xl">
             <CalendarComponent
               markedDates={markedDates}
               onMonthChange={month =>
@@ -84,7 +84,7 @@ const ProgressScreen = () => {
             Monthly Trend
           </Text>
 
-          <View className="bg-dark_grey p-4 rounded-xl">
+          <View className="bg-dark_grey p-4 rounded-2xl">
             {loading ? (
               <ActivityIndicator
                 size="large"
@@ -123,7 +123,7 @@ const ProgressScreen = () => {
             Motivational Tip
           </Text>
 
-          <View className="bg-dark_grey p-6 rounded-xl flex-row items-center gap-2">
+          <View className="bg-dark_grey p-6 rounded-2xl flex-row items-center gap-2">
             <MaterialDesignIcons
               name="lightbulb-outline"
               color={colors.light_green}
@@ -140,14 +140,14 @@ const ProgressScreen = () => {
         <View className="flex-row gap-4">
           <Button
             text="Export"
-            className="rounded-lg border-light_green border flex-1"
+            className="rounded-2xl border-light_green border flex-1"
             textClassName="text-light_green text-2xl font-medium"
             onPress={() => console.log('Export Progress')}
             icon={exportIcon}
           />
           <Button
             text="Share"
-            className="rounded-lg bg-light_green flex-1"
+            className="rounded-2xl bg-light_green flex-1"
             textClassName="text-black text-2xl font-medium"
             onPress={() => console.log('Share Progress')}
             icon={shareIcon}

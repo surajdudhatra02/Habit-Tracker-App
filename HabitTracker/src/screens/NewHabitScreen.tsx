@@ -170,7 +170,7 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
             </Text>
 
             {reminders.length > 0 && (
-              <View className="bg-dark_grey rounded-xl p-4 mb-4">
+              <View className="bg-dark_grey rounded-2xl p-4 mb-4">
                 {reminders.map((reminder, index) => (
                   <React.Fragment key={reminder.id}>
                     {index > 0 && <Divider />}
@@ -209,7 +209,7 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
 
             <Button
               text="Add time"
-              className="border-light_grey border-2 rounded-xl py-3"
+              className="border-light_grey border-2 rounded-2xl py-3"
               textClassName="text-off_white font-bold text-base"
               icon={
                 <MaterialDesignIcons
@@ -244,7 +244,7 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
 
           <Button
             text={isEditMode ? 'Update Habit' : 'Save Habit'}
-            className="bg-light_green px-6 py-4 rounded-xl mt-4"
+            className="bg-light_green px-6 py-4 rounded-2xl mt-4"
             textClassName="text-black font-bold text-base"
             loading={loading}
             loadingColor={colors.black}

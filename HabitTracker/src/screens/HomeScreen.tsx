@@ -49,10 +49,10 @@ const HomeScreen = ({ navigation }: Props) => {
         </View>
 
         {/* Today's Habit Card */}
-        <View className="bg-dark_grey p-5 rounded-xl mb-6">
+        <View className="bg-dark_grey p-5 rounded-2xl mb-6">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
-              <View className="p-4 bg-light_grey rounded-xl mr-4">
+              <View className="p-4 bg-light_grey rounded-2xl mr-4">
                 <FontAwesome
                   name="snowflake-o"
                   size={30}
@@ -72,7 +72,7 @@ const HomeScreen = ({ navigation }: Props) => {
 
             <Button
               text="Check-in"
-              className="bg-light_green px-4 py-2 rounded-lg ml-3"
+              className="bg-light_green px-4 py-2 rounded-2xl ml-3"
               textClassName="text-dark_bg font-bold text-sm"
               onPress={toTodayHabit}
             />
@@ -85,7 +85,7 @@ const HomeScreen = ({ navigation }: Props) => {
             Weekly Progress
           </Text>
 
-          <View className="bg-dark_grey p-4 rounded-xl">
+          <View className="bg-dark_grey p-4 rounded-2xl">
             {loading ? (
               <ActivityIndicator
                 size="large"
@@ -112,13 +112,13 @@ const HomeScreen = ({ navigation }: Props) => {
               />
             }
             text="Add/Change Habit"
-            className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center"
+            className="bg-light_green px-6 py-4 rounded-2xl flex-row items-center justify-center"
             textClassName="text-black font-bold text-base ml-2"
             onPress={toNewHabitScreen}
           />
           <Button
             text="Habits"
-            className="rounded-xl border-light_green border px-6 py-4"
+            className="rounded-2xl border-light_green border px-6 py-4"
             textClassName="text-light_green text-base font-bold"
             onPress={() => navigation.navigate(Routes.Habits)}
             icon={

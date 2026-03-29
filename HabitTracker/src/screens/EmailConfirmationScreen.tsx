@@ -54,14 +54,14 @@ const EmailConfirmationScreen = ({ navigation, route }) => {
           onPress={handleResendEmail}
           loading={loading}
           loadingColor="black"
-          className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center"
+          className="bg-light_green px-6 py-4 rounded-2xl flex-row items-center justify-center"
           textClassName="text-black font-bold text-base"
         />
 
         <Button
           text="Go to Login"
           onPress={() => navigation.navigate(Routes.Login)}
-          className="bg-dark_grey px-6 py-4 rounded-xl flex-row items-center justify-center border border-light_grey"
+          className="bg-dark_grey px-6 py-4 rounded-2xl flex-row items-center justify-center border border-light_grey"
           textClassName="text-white font-bold text-base"
         />
       </View>

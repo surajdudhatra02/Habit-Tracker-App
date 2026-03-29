@@ -24,7 +24,7 @@ const SettingsScreen = () => {
           Appearance
         </Text>
 
-        <View className="bg-light_grey p-4 rounded-xl flex-row items-center justify-between">
+        <View className="bg-light_grey p-4 rounded-2xl flex-row items-center justify-between">
           <View>
             <Text className="text-off_white text-xl">Theme</Text>
             <Text className="text-light_green text-xl ">System</Text>
@@ -41,7 +41,7 @@ const SettingsScreen = () => {
           Settings
         </Text>
 
-        <View className="bg-light_grey p-4 rounded-xl">
+        <View className="bg-light_grey p-4 rounded-2xl">
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-off_white text-xl">Notification</Text>
@@ -69,7 +69,7 @@ const SettingsScreen = () => {
           App Information
         </Text>
 
-        <View className="bg-light_grey p-4 rounded-xl">
+        <View className="bg-light_grey p-4 rounded-2xl">
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-off_white text-xl">Share App</Text>
@@ -100,7 +100,7 @@ const SettingsScreen = () => {
       <Button
         text="Logout"
         onPress={logout}
-        className="bg-dark_grey px-6 py-4 mx-4 rounded-xl flex-row items-center justify-center border border-light_grey"
+        className="bg-dark_grey px-6 py-4 mx-4 rounded-2xl flex-row items-center justify-center border border-light_grey"
         textClassName="text-white font-bold text-base"
       />
     </ScrollView>

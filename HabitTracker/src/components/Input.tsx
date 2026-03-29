@@ -22,7 +22,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <TextInput
       placeholder={placeholder}
-      className={`bg-dark_grey text-light_green rounded-xl p-4 ${
+      className={`bg-dark_grey text-light_green rounded-2xl p-4 ${
         className ?? ''
       }`}
       placeholderTextColor={colors.off_white}

@@ -69,7 +69,7 @@ const HabitsScreen = ({ navigation }: Props) => {
 
           <Button
             text="Add"
-            className="bg-light_green px-4 py-3 rounded-xl"
+            className="bg-light_green px-4 py-3 rounded-2xl"
             textClassName="text-black font-bold text-sm"
             icon={
               <MaterialDesignIcons name="plus" size={18} color={colors.black} />
@@ -82,7 +82,7 @@ const HabitsScreen = ({ navigation }: Props) => {
         {habits.length > 0 && (
           <View className="flex-row mt-4 gap-x-3">
             <View
-              className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
+              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
               style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
@@ -99,7 +99,7 @@ const HabitsScreen = ({ navigation }: Props) => {
             </View>
 
             <View
-              className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
+              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
               style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
@@ -116,7 +116,7 @@ const HabitsScreen = ({ navigation }: Props) => {
             </View>
 
             <View
-              className="flex-1 rounded-xl px-4 py-3 flex-row items-center"
+              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
               style={{ backgroundColor: colors.dark_grey }}
             >
               <MaterialDesignIcons
@@ -172,7 +172,7 @@ const HabitsScreen = ({ navigation }: Props) => {
                   <View className="p-4">
                     <View className="flex-row items-start">
                       <View
-                        className="rounded-xl p-3 mr-4"
+                        className="rounded-2xl p-3 mr-4"
                         style={{ backgroundColor: colors.icon_bg }}
                       >
                         <MaterialDesignIcons

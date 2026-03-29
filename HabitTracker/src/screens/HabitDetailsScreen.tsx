@@ -56,7 +56,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
         <View className="mx-6 mt-6 bg-dark_grey rounded-2xl p-5">
           <View className="flex-row items-center mb-4">
             <View
-              className="p-4 rounded-xl mr-4"
+              className="p-4 rounded-2xl mr-4"
               style={{ backgroundColor: '#2a352b' }}
             >
               <MaterialDesignIcons
@@ -74,7 +74,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
           </View>
 
           {habit.description ? (
-            <View className="bg-light_grey rounded-xl p-4">
+            <View className="bg-light_grey rounded-2xl p-4">
               <Text className="text-grey_text text-xs font-semibold uppercase mb-1 tracking-widest">
                 Description
               </Text>
@@ -141,7 +141,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
             Timeline
           </Text>
           <View className="flex-row items-center mb-4">
-            <View className="bg-light_grey p-2 rounded-lg mr-3">
+            <View className="bg-light_grey p-2 rounded-2xl mr-3">
               <MaterialDesignIcons
                 name="calendar-plus"
                 size={16}
@@ -157,7 +157,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
           </View>
 
           <View className="flex-row items-center">
-            <View className="bg-light_grey p-2 rounded-lg mr-3">
+            <View className="bg-light_grey p-2 rounded-2xl mr-3">
               <MaterialDesignIcons
                 name="calendar-edit"
                 size={16}
@@ -199,7 +199,7 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
                 }`}
               >
                 <View className="flex-row items-center">
-                  <View className="bg-light_grey p-2 rounded-lg mr-3">
+                  <View className="bg-light_grey p-2 rounded-2xl mr-3">
                     <MaterialDesignIcons
                       name="clock-outline"
                       size={16}

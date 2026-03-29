@@ -90,7 +90,7 @@ const SignUpScreen = ({ navigation }) => {
 
         <Button
           text={loading ? 'Creating Account...' : 'Sign Up'}
-          className="bg-light_green px-6 py-4 rounded-xl flex-row items-center justify-center mt-4"
+          className="bg-light_green px-6 py-4 rounded-2xl flex-row items-center justify-center mt-4"
           textClassName="text-black font-bold text-base"
           onPress={onSignUp}
         />
@@ -101,7 +101,7 @@ const SignUpScreen = ({ navigation }) => {
 
         <Button
           text="Sign Up with Google"
-          className="bg-light_grey px-6 py-4 rounded-xl flex-row items-center justify-center"
+          className="bg-light_grey px-6 py-4 rounded-2xl flex-row items-center justify-center"
           textClassName="text-white font-bold text-base"
           onPress={loginWithGoogle}
         />

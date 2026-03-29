@@ -52,7 +52,7 @@ const TimePicker = ({ value, onChange, onDismiss }: Props) => {
         onPress={handleCancel}
       >
         <Pressable
-          className="bg-dark_grey rounded-t-3xl"
+          className="bg-dark_grey rounded-t-2xl"
           onPress={e => e.stopPropagation()}
         >
           {/* Header */}

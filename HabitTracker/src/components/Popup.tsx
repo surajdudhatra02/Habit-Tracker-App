@@ -76,14 +76,14 @@ const Popup: React.FC<PopupProps> = ({
               <View className="flex-row px-4 pb-4 gap-3">
                 <Button
                   text={cancelText}
-                  className="border-2 border-light_grey px-6 py-4 rounded-xl"
+                  className="border-2 border-light_grey px-6 py-4 rounded-2xl"
                   textClassName="text-off_white font-bold text-base text-center"
                   onPress={onCancel}
                 />
 
                 <Button
                   text={confirmText}
-                  className="bg-light_green px-6 py-4 rounded-xl"
+                  className="bg-light_green px-6 py-4 rounded-2xl"
                   textClassName="text-black font-bold text-base text-center"
                   onPress={onConfirm}
                 />
