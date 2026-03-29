@@ -1,9 +1,61 @@
-import { View, Text, ScrollView } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { Button, CalendarComponent, ProgressCurveChart } from '../components';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
+import { useHabitCompletionRange, CompletionDay } from '../hooks';
 
 const ProgressScreen = () => {
+  // --- Weekly Trend (last 7 days) ---
+  const { startDate, endDate } = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 6);
+    return { startDate: start, endDate: end };
+  }, []);
+
+  const { data, averageRate, trend, loading } = useHabitCompletionRange({
+    startDate,
+    endDate,
+  });
+
+  // --- Calendar (visible month) ---
+  const today = new Date();
+  const [calMonth, setCalMonth] = useState({
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+  });
+
+  const { calStartDate, calEndDate } = useMemo(() => {
+    const start = new Date(calMonth.year, calMonth.month - 1, 1);
+    const end = new Date(calMonth.year, calMonth.month, 0);
+    return { calStartDate: start, calEndDate: end };
+  }, [calMonth]);
+
+  const { data: calData } = useHabitCompletionRange({
+    startDate: calStartDate,
+    endDate: calEndDate,
+  });
+
+  const markedDates = useMemo(() => {
+    const result: Record<string, { marked: boolean; dotColor: string }> = {};
+    const todayStr = new Date().toISOString().split('T')[0];
+    calData.forEach((d: CompletionDay) => {
+      if (d.total_habits === 0) return; // no habits existed that day — skip
+      if (d.day_date > todayStr) return; // future dates — never completed, skip
+      let dotColor: string;
+      if (d.completion_rate === 100) {
+        dotColor = colors.light_green; // full completion
+      } else if (d.completion_rate > 0) {
+        dotColor = colors.yellow; // partial
+      } else {
+        dotColor = colors.red; // missed
+      }
+      result[d.day_date] = { marked: true, dotColor };
+    });
+    return result;
+  }, [calData]);
+
   const exportIcon = (
     <MaterialDesignIcons name="download" color={colors.light_green} size={18} />
   );
@@ -21,7 +73,12 @@ const ProgressScreen = () => {
           </Text>
 
           <View className="bg-dark_grey p-4 rounded-xl">
-            <CalendarComponent />
+            <CalendarComponent
+              markedDates={markedDates}
+              onMonthChange={month =>
+                setCalMonth({ year: month.year, month: month.month })
+              }
+            />
           </View>
         </View>
 
@@ -32,25 +89,35 @@ const ProgressScreen = () => {
           </Text>
 
           <View className="bg-dark_grey p-4 rounded-xl">
-            <>
-              <Text className="text-white text-xl">Habit Completion</Text>
-              <Text className="text-light_green text-3xl font-bold">85%</Text>
-              <View className="flex-row items-center gap-5">
-                <Text className="text-grey_text text-xl">Last 7 Days</Text>
-                <View className="flex-row items-center gap-1">
-                  <MaterialDesignIcons
-                    name="trending-up"
-                    size={18}
-                    color={colors.light_green}
-                  />
-                  <Text className="text-light_green font-semibold text-xl">
-                    +10%
-                  </Text>
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.light_green}
+                className="py-16"
+              />
+            ) : (
+              <>
+                <Text className="text-white text-xl">Habit Completion</Text>
+                <Text className="text-light_green text-3xl font-bold">
+                  {averageRate}%
+                </Text>
+                <View className="flex-row items-center gap-5">
+                  <Text className="text-grey_text text-xl">Last 7 Days</Text>
+                  <View className="flex-row items-center gap-1">
+                    <MaterialDesignIcons
+                      name={trend >= 0 ? 'trending-up' : 'trending-down'}
+                      size={18}
+                      color={colors.light_green}
+                    />
+                    <Text className="text-light_green font-semibold text-xl">
+                      {trend >= 0 ? `+${trend}%` : `${trend}%`}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </>
 
-            <ProgressCurveChart />
+                <ProgressCurveChart data={data} />
+              </>
+            )}
           </View>
         </View>
 

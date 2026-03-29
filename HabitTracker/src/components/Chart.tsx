@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import { BarChart, CurveType, LineChart } from 'react-native-gifted-charts';
 import { colors } from '../constants';
+import { CompletionDay } from '../hooks';
 
 export const HomeBarChart = () => {
   const barData = [{ value: 15 }, { value: 30 }, { value: 26 }, { value: 40 }];
@@ -20,20 +21,16 @@ export const HomeBarChart = () => {
   );
 };
 
-export const ProgressCurveChart = () => {
-  const barData = [
-    { value: 15, label: 'Mon' },
-    { value: 30, label: 'Tue' },
-    { value: 26, label: 'Wed' },
-    { value: 50, label: 'Thu' },
-    { value: 50, label: 'Fri' },
-    { value: 30, label: 'Sat' },
-    { value: 10, label: 'Sun' },
-  ];
+export const ProgressCurveChart = ({ data }: { data: CompletionDay[] }) => {
+  const chartData = data.map(d => ({
+    value: d.completion_rate,
+    label: d.day_label,
+  }));
+
   return (
     <View className="-ml-4">
       <LineChart
-        data={barData}
+        data={chartData.length > 0 ? chartData : [{ value: 0, label: '' }]}
         color={colors.light_green}
         yAxisThickness={0}
         xAxisThickness={0}
@@ -43,6 +40,7 @@ export const ProgressCurveChart = () => {
         hideYAxisText
         curved
         isAnimated
+        maxValue={100}
         xAxisLabelTextStyle={{
           color: colors.grey_text,
         }}

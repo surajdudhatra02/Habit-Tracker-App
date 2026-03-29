@@ -1,17 +1,31 @@
-import { Calendar } from 'react-native-calendars';
+import { Calendar, DateData } from 'react-native-calendars';
 import { colors } from '../constants';
 
-const CalendarComponent = () => {
+interface MarkedDate {
+  selected?: boolean;
+  selectedColor?: string;
+  dotColor?: string;
+  marked?: boolean;
+}
+
+interface CalendarComponentProps {
+  markedDates?: Record<string, MarkedDate>;
+  onMonthChange?: (month: DateData) => void;
+}
+
+const CalendarComponent = ({
+  markedDates = {},
+  onMonthChange,
+}: CalendarComponentProps) => {
   const today = new Date();
-  const formattedToday = today.toISOString().split('T')[0]; // Format as 'YYYY-MM-DD'
+  const formattedToday = today.toISOString().split('T')[0];
 
   return (
     <Calendar
       maxDate={formattedToday}
-      markedDates={{
-        '2025-11-20': { selected: true },
-        '2025-11-25': { selected: true },
-      }}
+      markedDates={markedDates}
+      markingType="dot"
+      onMonthChange={onMonthChange}
       hideExtraDays
       theme={{
         calendarBackground: 'transparent',
@@ -22,6 +36,7 @@ const CalendarComponent = () => {
         selectedDayTextColor: colors.dark_bg,
         selectedDayBackgroundColor: colors.light_green,
         todayTextColor: colors.light_green,
+        dotColor: colors.light_green,
       }}
     />
   );
