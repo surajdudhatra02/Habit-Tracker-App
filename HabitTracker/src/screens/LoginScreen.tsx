@@ -48,13 +48,23 @@ const LoginScreen = ({ navigation }) => {
           value={email}
           onChangeText={setEmail}
         />
-        <Input
-          placeholder="Enter Password"
-          className="p-5"
-          value={password}
-          secureTextEntry
-          onChangeText={setPassword}
-        />
+        <View>
+          <Input
+            placeholder="Enter Password"
+            className="p-5"
+            value={password}
+            secureTextEntry
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            className="mt-3 items-end"
+            onPress={() => navigation.navigate(Routes.ForgotPassword)}
+          >
+            <Text className="text-light_green font-medium text-sm">
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <Button
           text={loading ? 'Logging in...' : 'Login'}

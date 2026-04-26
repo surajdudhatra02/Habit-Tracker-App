@@ -1,27 +1,28 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList, Routes } from './route';
+import { RootStackParamList } from './route';
 import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
 import { useAuth } from '../hooks';
 import { ActivityIndicator, View } from 'react-native';
+import { colors } from '../constants';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
-  const { session, loading } = useAuth();
+  const { session, loading, isPasswordRecovery } = useAuth();
 
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-dark_bg">
-        <ActivityIndicator size="large" color="#4ade80" />
+        <ActivityIndicator size="large" color={colors.light_green} />
       </View>
     );
   }
 
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
-      {session ? (
+      {session && !isPasswordRecovery ? (
         <RootStack.Screen name="App" component={AppNavigator} />
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />

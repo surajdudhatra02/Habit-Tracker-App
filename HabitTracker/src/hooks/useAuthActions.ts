@@ -69,10 +69,45 @@ export const useAuthActions = () => {
     }
   };
 
+  const sendPasswordResetOtp = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  };
+
+  const verifyPasswordResetOtp = async (email: string, token: string) => {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'recovery',
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const updatePassword = async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
   return {
     loginWithGoogle,
     loginWithEmail,
     signUpWithEmail,
     resendConfirmationEmail,
+    sendPasswordResetOtp,
+    verifyPasswordResetOtp,
+    updatePassword,
   };
 };

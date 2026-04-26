@@ -9,12 +9,18 @@ import {
   TodayHabitsScreen,
   HabitsScreen,
   HabitDetailsScreen,
+  ForgotPasswordScreen,
+  VerifyOtpScreen,
+  ResetPasswordScreen,
 } from '../screens';
 
 export enum Routes {
   Login = 'Login',
   SignUp = 'SignUp',
   EmailConfirm = 'EmailConfirm',
+  ForgotPassword = 'ForgotPassword',
+  VerifyOtp = 'VerifyOtp',
+  ResetPassword = 'ResetPassword',
 
   Main = 'Main',
   Home = 'Home',
@@ -30,6 +36,9 @@ export const RouteScreens = {
   [Routes.Login]: LoginScreen,
   [Routes.SignUp]: SignUpScreen,
   [Routes.EmailConfirm]: EmailConfirmationScreen,
+  [Routes.ForgotPassword]: ForgotPasswordScreen,
+  [Routes.VerifyOtp]: VerifyOtpScreen,
+  [Routes.ResetPassword]: ResetPasswordScreen,
 
   [Routes.Home]: HomeScreen,
   [Routes.Progress]: ProgressScreen,
@@ -44,6 +53,9 @@ export type AuthStackParamList = {
   [Routes.Login]: undefined;
   [Routes.SignUp]: undefined;
   [Routes.EmailConfirm]: undefined;
+  [Routes.ForgotPassword]: undefined;
+  [Routes.VerifyOtp]: { email: string };
+  [Routes.ResetPassword]: undefined;
 };
 
 export type MainTabParamList = {
