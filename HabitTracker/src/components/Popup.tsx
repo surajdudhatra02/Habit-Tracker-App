@@ -1,5 +1,5 @@
 import { View, Text, Modal, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from './Button';
 import { colors } from '../constants';

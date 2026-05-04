@@ -1,3 +1,4 @@
+import React from 'react';
 import { View } from 'react-native';
 import { BarChart, CurveType, LineChart } from 'react-native-gifted-charts';
 import { colors } from '../constants';

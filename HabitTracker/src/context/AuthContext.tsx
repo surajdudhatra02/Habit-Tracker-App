@@ -1,5 +1,5 @@
 import { Session, User } from '@supabase/supabase-js';
-import {
+import React, {
   createContext,
   ReactNode,
   useEffect,

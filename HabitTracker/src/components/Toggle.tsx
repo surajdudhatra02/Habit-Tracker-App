@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Switch } from 'react-native';
 import { useState } from 'react';
 import { colors } from '../constants';

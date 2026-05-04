@@ -1,5 +1,6 @@
+import React from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { colors } from '../constants';
 import Button from './Button';
 

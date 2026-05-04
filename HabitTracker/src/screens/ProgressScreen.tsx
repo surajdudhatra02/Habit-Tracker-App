@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { Button, CalendarComponent, ProgressCurveChart } from '../components';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
