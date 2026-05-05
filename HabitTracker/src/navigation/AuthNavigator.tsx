@@ -46,13 +46,23 @@ const AuthNavigator = () => {
       <Stack.Screen
         name={Routes.VerifyOtp}
         component={RouteScreens[Routes.VerifyOtp]}
-        options={{ headerShown: true, headerTitle: 'Verify OTP' }}
+        options={{
+          headerShown: true,
+          headerTitle: 'Verify OTP',
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
       />
 
       <Stack.Screen
         name={Routes.ResetPassword}
         component={RouteScreens[Routes.ResetPassword]}
-        options={{ headerShown: true, headerTitle: 'Reset Password' }}
+        options={{
+          headerShown: true,
+          headerTitle: 'Reset Password',
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
       />
     </Stack.Navigator>
   );

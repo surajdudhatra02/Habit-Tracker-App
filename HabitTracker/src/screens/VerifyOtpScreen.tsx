@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input } from '../components';
@@ -53,6 +53,17 @@ const VerifyOtpScreen = ({ route, navigation }: any) => {
           onPress={onVerify}
           disabled={loading}
         />
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.reset({ index: 0, routes: [{ name: Routes.Login }] })
+          }
+          className="mt-2 items-center"
+        >
+          <Text className="text-light_green font-bold text-base">
+            Back to Login
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

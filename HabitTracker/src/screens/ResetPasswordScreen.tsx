@@ -1,11 +1,10 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input } from '../components';
 import { Routes } from '../navigation/route';
 import { useAuth, useAuthActions } from '../hooks';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
-
 
 const ResetPasswordScreen = ({ navigation }: any) => {
   const { updatePassword } = useAuthActions();
@@ -75,6 +74,19 @@ const ResetPasswordScreen = ({ navigation }: any) => {
           onPress={onReset}
           disabled={loading}
         />
+
+        <TouchableOpacity
+          onPress={async () => {
+            await logout();
+            clearPasswordRecovery();
+            navigation.reset({ index: 0, routes: [{ name: Routes.Login }] });
+          }}
+          className="mt-2 items-center"
+        >
+          <Text className="text-light_green font-bold text-base">
+            Cancel & Back to Login
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
