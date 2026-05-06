@@ -12,6 +12,7 @@ import NewHabitScreen from './NewHabitScreen';
 import TodayHabitsScreen from './TodayHabitsScreen';
 import HabitsScreen from './HabitsScreen';
 import HabitDetailsScreen from './HabitDetailsScreen';
+import ProfileInfoScreen from './ProfileInfoScreen';
 
 export {
   LoginScreen,
@@ -27,4 +28,5 @@ export {
   TodayHabitsScreen,
   HabitsScreen,
   HabitDetailsScreen,
+  ProfileInfoScreen,
 };

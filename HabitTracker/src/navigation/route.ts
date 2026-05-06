@@ -12,6 +12,7 @@ import {
   ForgotPasswordScreen,
   VerifyOtpScreen,
   ResetPasswordScreen,
+  ProfileInfoScreen,
 } from '../screens';
 
 export enum Routes {
@@ -30,6 +31,7 @@ export enum Routes {
   TodayHabits = 'TodayHabits',
   Habits = 'Habits',
   HabitDetails = 'HabitDetails',
+  ProfileInfo = 'ProfileInfo',
 }
 
 export const RouteScreens = {
@@ -47,6 +49,7 @@ export const RouteScreens = {
   [Routes.TodayHabits]: TodayHabitsScreen,
   [Routes.Habits]: HabitsScreen,
   [Routes.HabitDetails]: HabitDetailsScreen,
+  [Routes.ProfileInfo]: ProfileInfoScreen,
 };
 
 export type AuthStackParamList = {
@@ -77,4 +80,5 @@ export type RootStackParamList = {
   [Routes.TodayHabits]: undefined;
   [Routes.Habits]: undefined;
   [Routes.HabitDetails]: { habit: import('../types').Habit };
+  [Routes.ProfileInfo]: undefined;
 };

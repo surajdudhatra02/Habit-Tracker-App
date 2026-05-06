@@ -47,6 +47,11 @@ const AppNavigator = () => {
         component={RouteScreens[Routes.HabitDetails]}
         options={{ headerTitle: 'Habit Details' }}
       />
+      <Stack.Screen
+        name={Routes.ProfileInfo}
+        component={RouteScreens[Routes.ProfileInfo]}
+        options={{ headerTitle: 'Profile' }}
+      />
     </Stack.Navigator>
   );
 };

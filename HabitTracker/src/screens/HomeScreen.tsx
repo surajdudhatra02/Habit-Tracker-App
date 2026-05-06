@@ -9,7 +9,7 @@ import { Button, HomeBarChart, SuccessRate } from '../components';
 import { MainTabParamList, RootStackParamList } from '../navigation';
 import { Routes } from '../navigation/route';
 import { colors } from '../constants';
-import { useHabitCompletionRange } from '../hooks';
+import { useHabitCompletionRange, useAuth } from '../hooks';
 import { getDateRange } from '../utils';
 
 type Props = CompositeScreenProps<
@@ -18,6 +18,13 @@ type Props = CompositeScreenProps<
 >;
 
 const HomeScreen = ({ navigation }: Props) => {
+  const { user } = useAuth();
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split('@')[0] ||
+    'User';
+
   const toTodayHabit = () => navigation.navigate(Routes.TodayHabits);
   const toNewHabitScreen = () => navigation.navigate(Routes.NewHabit);
 
@@ -41,7 +48,7 @@ const HomeScreen = ({ navigation }: Props) => {
         {/* Header Section */}
         <View className="mb-6">
           <Text className="text-3xl font-bold text-light_green mb-2">
-            Home, User !!
+            Hello, {displayName} 👋
           </Text>
           <Text className="text-grey_text text-base">
             You're on a roll! Keep up the great work.
