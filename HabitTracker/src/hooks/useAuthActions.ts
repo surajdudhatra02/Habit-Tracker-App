@@ -1,7 +1,7 @@
 import { Linking } from 'react-native';
 import { supabase } from '../lib/supabase';
 
-const REDIRECT_URL = 'habittracker://auth';
+const REDIRECT_URL = 'habitz://auth';
 
 export const useAuthActions = () => {
   const loginWithGoogle = async () => {

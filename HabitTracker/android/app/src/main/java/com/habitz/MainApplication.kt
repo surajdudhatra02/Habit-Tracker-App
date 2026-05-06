@@ -1,4 +1,4 @@
-package com.habittracker
+package com.suraj.habitz
 
 import android.app.Application
 import com.facebook.react.PackageList
