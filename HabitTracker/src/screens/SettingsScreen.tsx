@@ -1,7 +1,14 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Divider, ToggleSwitch } from '../components';
+import { showInfoToast } from '../utils/toast';
 import DeviceInfo from 'react-native-device-info';
 import { colors } from '../constants';
 import { useAuth } from '../hooks';
@@ -123,24 +130,43 @@ const SettingsScreen = ({ navigation }: any) => {
         </Text>
 
         <View className="bg-light_grey p-4 rounded-2xl">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-off_white text-xl">Share App</Text>
-            {shareIcon}
-          </View>
+          <TouchableOpacity
+            onPress={() =>
+              showInfoToast('Habitz', 'Coming soon on Google Play Store')
+            }
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center justify-between">
+              <Text className="text-off_white text-xl">Share App</Text>
+              {shareIcon}
+            </View>
+          </TouchableOpacity>
 
           <Divider />
 
-          <View className="flex-row items-center justify-between">
-            <Text className="text-off_white text-xl">Rate</Text>
-            {rateIcon}
-          </View>
+          <TouchableOpacity
+            onPress={() => showInfoToast('Habitz', 'Coming soon on Play Store')}
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center justify-between">
+              <Text className="text-off_white text-xl">Rate</Text>
+              {rateIcon}
+            </View>
+          </TouchableOpacity>
 
           <Divider />
 
-          <View className="flex-row items-center justify-between">
-            <Text className="text-off_white text-xl">Privacy Policy</Text>
-            {rightIcon}
-          </View>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('https://sites.google.com/view/habitz-privacy')
+            }
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center justify-between">
+              <Text className="text-off_white text-xl">Privacy Policy</Text>
+              {rightIcon}
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
 

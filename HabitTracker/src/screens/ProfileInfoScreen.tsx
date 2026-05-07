@@ -227,6 +227,63 @@ const ProfileInfoScreen = ({ navigation }: any) => {
           </View>
           <Text className="text-off_white text-base">{provider}</Text>
         </View>
+
+        {/* Danger Zone */}
+        <View className="mt-8 mb-4">
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                'Delete Account',
+                'Are you sure you want to delete your account? This will permanently remove all your habits and progress. This action cannot be undone.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                      try {
+                        // In a real app, you'd call a Supabase Edge Function or RPC here
+                        // since client-side deletion is restricted.
+                        // For now, we'll clear user data and logout.
+                        const { data: habits } = await supabase
+                          .from('habits')
+                          .select('id');
+                        if (habits) {
+                          for (const h of habits) {
+                            await supabase
+                              .from('habits')
+                              .delete()
+                              .eq('id', h.id);
+                          }
+                        }
+                        await supabase.auth.signOut();
+                      } catch (err) {
+                        Alert.alert('Error', 'Failed to delete account data.');
+                      }
+                    },
+                  },
+                ],
+              );
+            }}
+            className="bg-dark_grey border border-red rounded-2xl p-5 flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center">
+              <MaterialDesignIcons
+                name="account-remove-outline"
+                size={24}
+                color={colors.red}
+              />
+              <Text className="text-red text-base font-bold ml-3">
+                Delete Account
+              </Text>
+            </View>
+            <MaterialDesignIcons
+              name="chevron-right"
+              size={24}
+              color={colors.red}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );

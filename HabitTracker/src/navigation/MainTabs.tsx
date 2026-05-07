@@ -47,7 +47,7 @@ const MainTabs = () => {
       <Tab.Screen
         name={Routes.Home}
         component={RouteScreens[Routes.Home]}
-        options={{ headerTitle: 'Habit Spark' }}
+        options={{ headerTitle: 'Habitz' }}
       />
       <Tab.Screen
         name={Routes.Progress}

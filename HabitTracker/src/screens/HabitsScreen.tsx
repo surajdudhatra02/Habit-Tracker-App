@@ -11,7 +11,7 @@ import MaterialDesignIcons from '@react-native-vector-icons/material-design-icon
 import { colors } from '../constants';
 import { useHabitStore } from '../store';
 import { Habit } from '../types';
-import { Button, EmptyState, LoadingState } from '../components';
+import { Button, EmptyState, LoadingState, Popup } from '../components';
 import { getHabitIcon, daysSince, formatDate } from '../utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, Routes } from '../navigation/route';
@@ -22,8 +22,12 @@ const HabitsScreen = ({ navigation }: Props) => {
   const habits = useHabitStore(s => s.habits);
   const loading = useHabitStore(s => s.loading);
   const fetchHabits = useHabitStore(s => s.fetchHabits);
-  
+  const deleteHabit = useHabitStore(s => s.deleteHabit);
+
   const [refreshing, setRefreshing] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Auto refresh every time screen comes into focus
   useFocusEffect(
@@ -40,6 +44,20 @@ const HabitsScreen = ({ navigation }: Props) => {
       console.error('Error refreshing habits:', error);
     } finally {
       setRefreshing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!habitToDelete) return;
+    setDeleting(true);
+    try {
+      await deleteHabit(habitToDelete.id);
+    } catch (error) {
+      console.error('Error deleting habit:', error);
+    } finally {
+      setDeleting(false);
+      setShowDeletePopup(false);
+      setHabitToDelete(null);
     }
   };
 
@@ -190,11 +208,26 @@ const HabitsScreen = ({ navigation }: Props) => {
                           >
                             {habit.name}
                           </Text>
-                          <MaterialDesignIcons
-                            name="chevron-right"
-                            size={20}
-                            color={colors.grey_text}
-                          />
+                          <View className="flex-row items-center">
+                            <TouchableOpacity
+                              onPress={() => {
+                                setHabitToDelete(habit);
+                                setShowDeletePopup(true);
+                              }}
+                              className="mr-3"
+                            >
+                              <MaterialDesignIcons
+                                name="trash-can-outline"
+                                size={20}
+                                color={colors.red}
+                              />
+                            </TouchableOpacity>
+                            <MaterialDesignIcons
+                              name="chevron-right"
+                              size={20}
+                              color={colors.grey_text}
+                            />
+                          </View>
                         </View>
 
                         {habit.description ? (
@@ -264,6 +297,20 @@ const HabitsScreen = ({ navigation }: Props) => {
           </View>
         )}
       </ScrollView>
+      <Popup
+        visible={showDeletePopup}
+        type="warning"
+        title="Delete Habit?"
+        message={`Are you sure you want to delete "${habitToDelete?.name}"? This action cannot be undone.`}
+        showCancel={true}
+        confirmText={deleting ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        onConfirm={handleDelete}
+        onCancel={() => {
+          setShowDeletePopup(false);
+          setHabitToDelete(null);
+        }}
+      />
     </View>
   );
 };
