@@ -1,3 +1,4 @@
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MainTabParamList, Routes, RouteScreens } from './route';

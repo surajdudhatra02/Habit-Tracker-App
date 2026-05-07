@@ -142,14 +142,12 @@ const ProgressScreen = () => {
             text="Export"
             className="rounded-2xl border-light_green border flex-1"
             textClassName="text-light_green text-2xl font-medium"
-            onPress={() => console.log('Export Progress')}
             icon={exportIcon}
           />
           <Button
             text="Share"
             className="rounded-2xl bg-light_green flex-1"
             textClassName="text-black text-2xl font-medium"
-            onPress={() => console.log('Share Progress')}
             icon={shareIcon}
           />
         </View>

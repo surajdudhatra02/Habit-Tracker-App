@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Divider, ToggleSwitch } from '../components';
+import DeviceInfo from 'react-native-device-info';
 import { colors } from '../constants';
 import { useAuth } from '../hooks';
 import { Routes } from '../navigation/route';
@@ -77,7 +78,7 @@ const SettingsScreen = ({ navigation }: any) => {
       </View>
 
       {/* Appearance */}
-      <View className="px-4 pb-4">
+      {/* <View className="px-4 pb-4">
         <Text className="text-off_white text-title_Font font-bold mb-4">
           Appearance
         </Text>
@@ -92,10 +93,10 @@ const SettingsScreen = ({ navigation }: any) => {
             {rightIcon}
           </View>
         </View>
-      </View>
+      </View> */}
 
       {/* Settings */}
-      <View className="px-4 pb-4">
+      {/* <View className="px-4 pb-4">
         <Text className="text-off_white text-title_Font font-bold mb-4">
           Settings
         </Text>
@@ -113,7 +114,7 @@ const SettingsScreen = ({ navigation }: any) => {
             <ToggleSwitch />
           </View>
         </View>
-      </View>
+      </View> */}
 
       {/* App Information */}
       <View className="px-4 pb-4">
@@ -146,9 +147,15 @@ const SettingsScreen = ({ navigation }: any) => {
       <Button
         text="Logout"
         onPress={logout}
-        className="bg-dark_grey px-6 py-4 mx-4 mb-6 rounded-2xl flex-row items-center justify-center border border-light_grey"
+        className="bg-dark_grey px-6 py-4 mx-4 mb-4 rounded-2xl flex-row items-center justify-center border border-light_grey"
         textClassName="text-white font-bold text-base"
       />
+
+      <View className="items-center pb-8">
+        <Text className="text-grey_text text-sm">
+          Version {DeviceInfo.getVersion()}
+        </Text>
+      </View>
     </ScrollView>
   );
 };

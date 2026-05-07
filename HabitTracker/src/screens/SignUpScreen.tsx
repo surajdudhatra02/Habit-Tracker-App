@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { useAuthActions } from '../hooks';
 import { Routes } from '../navigation/route';
@@ -21,7 +22,6 @@ const SignUpScreen = ({ navigation }) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
-      console.log('Invalid email format');
       return;
     }
 
@@ -51,7 +51,7 @@ const SignUpScreen = ({ navigation }) => {
         showSuccessToast('Success', 'Account created successfully!');
       }
     } catch (err: any) {
-      console.log(err.message);
+      // console.log(err.message);
     } finally {
       setLoading(false);
     }
