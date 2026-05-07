@@ -137,7 +137,7 @@ const ProgressScreen = () => {
         </View>
 
         {/* Buttons */}
-        <View className="flex-row gap-4">
+        {/* <View className="flex-row gap-4">
           <Button
             text="Export"
             className="rounded-2xl border-light_green border flex-1"
@@ -150,7 +150,7 @@ const ProgressScreen = () => {
             textClassName="text-black text-2xl font-medium"
             icon={shareIcon}
           />
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );
