@@ -1,3 +1,4 @@
+import React from 'react';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { NavigationContainer } from '@react-navigation/native';
