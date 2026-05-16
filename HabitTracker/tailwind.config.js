@@ -16,6 +16,11 @@ module.exports = {
         dark_green: '#122118',
         light_green: '#a5c9a7',
         red: '#FF5A5F',
+        black: '#000',
+        yellow: '#FFC107',
+        card_border: '#2a2a2d',
+        icon_bg: '#2a352b',
+        goal_bg: '#252535',
       },
       fontSize: {
         title_Font : "22px"
