@@ -241,25 +241,13 @@ const ProfileInfoScreen = ({ navigation }: any) => {
                     text: 'Delete',
                     style: 'destructive',
                     onPress: async () => {
-                      try {
-                        // In a real app, you'd call a Supabase Edge Function or RPC here
-                        // since client-side deletion is restricted.
-                        // For now, we'll clear user data and logout.
-                        const { data: habits } = await supabase
-                          .from('habits')
-                          .select('id');
-                        if (habits) {
-                          for (const h of habits) {
-                            await supabase
-                              .from('habits')
-                              .delete()
-                              .eq('id', h.id);
-                          }
+                        const { error } = await supabase.rpc('delete_user');
+                        
+                        if (error) {
+                          Alert.alert('Error', 'Failed to delete account data: ' + error.message);
+                        } else {
+                          await supabase.auth.signOut();
                         }
-                        await supabase.auth.signOut();
-                      } catch (err) {
-                        Alert.alert('Error', 'Failed to delete account data.');
-                      }
                     },
                   },
                 ],
