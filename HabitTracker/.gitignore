@@ -5,6 +5,9 @@
 
 .env
 
+android/keystore.properties
+android/app/*.keystore
+
 # Xcode
 #
 build/
