@@ -8,10 +8,7 @@ export const HomeBarChart = ({ data }: { data: CompletionDay[] }) => {
   const barData = data.map(d => ({
     value: d.completed_habits,
     label: d.day_label,
-    frontColor:
-      d.completed_habits === d.total_habits && d.total_habits > 0
-        ? colors.light_green // full completion — bright
-        : colors.dark_green, // partial / zero — dimmer
+    frontColor: colors.light_green,
   }));
 
   return (

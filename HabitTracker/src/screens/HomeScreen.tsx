@@ -1,6 +1,6 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps } from '@react-navigation/native';
-import React, { useMemo } from 'react';
+import { CompositeScreenProps, useFocusEffect } from '@react-navigation/native';
+import React, { useMemo, useCallback, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
@@ -11,6 +11,7 @@ import { Routes } from '../navigation/route';
 import { colors } from '../constants';
 import { useHabitCompletionRange, useAuth } from '../hooks';
 import { getDateRange } from '../utils';
+import { useHabitStore } from '../store';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -28,13 +29,44 @@ const HomeScreen = ({ navigation }: Props) => {
   const toTodayHabit = () => navigation.navigate(Routes.TodayHabits);
   const toNewHabitScreen = () => navigation.navigate(Routes.NewHabit);
 
+  const habits = useHabitStore(s => s.habits);
+  const fetchHabits = useHabitStore(s => s.fetchHabits);
+  const getTodayCompletions = useHabitStore(s => s.getTodayCompletions);
+  const [completedTodayCount, setCompletedTodayCount] = useState(0);
+
   // Last 7 days — weekly count
   const { startDate, endDate } = useMemo(() => getDateRange(6), []);
 
-  const { data, averageRate, loading } = useHabitCompletionRange({
+  const {
+    data,
+    averageRate,
+    loading,
+    refetch: refetchRange,
+  } = useHabitCompletionRange({
     startDate,
     endDate,
   });
+
+  const loadData = useCallback(async () => {
+    try {
+      const [, completions] = await Promise.all([
+        fetchHabits(),
+        getTodayCompletions(),
+        refetchRange(),
+      ]);
+      if (completions) {
+        setCompletedTodayCount(completions.length);
+      }
+    } catch (error) {
+      console.error('Failed to load home screen data:', error);
+    }
+  }, [fetchHabits, getTodayCompletions, refetchRange]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData]),
+  );
 
   return (
     <ScrollView
@@ -72,7 +104,11 @@ const HomeScreen = ({ navigation }: Props) => {
                   Today's Habit
                 </Text>
                 <Text className="text-grey_text text-sm">
-                  Meditate for 10 minutes
+                  {habits.length === 0
+                    ? 'No habits scheduled for today'
+                    : completedTodayCount === habits.length
+                      ? 'All done for today! 🎉'
+                      : `${completedTodayCount} of ${habits.length} habits completed`}
                 </Text>
               </View>
             </View>
