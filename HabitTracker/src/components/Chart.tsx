@@ -46,6 +46,9 @@ export const ProgressCurveChart = ({ data }: { data: CompletionDay[] }) => {
         hideYAxisText
         curved
         isAnimated
+        scrollToEnd
+        scrollAnimation
+        endSpacing={0}
         maxValue={100}
         xAxisLabelTextStyle={{
           color: colors.grey_text,
