@@ -1,7 +1,13 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useFocusEffect } from '@react-navigation/native';
 import React, { useMemo, useCallback, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
@@ -10,7 +16,7 @@ import { MainTabParamList, RootStackParamList } from '../navigation';
 import { Routes } from '../navigation/route';
 import { colors } from '../constants';
 import { useHabitCompletionRange, useAuth } from '../hooks';
-import { getDateRange } from '../utils';
+import { getDateRange, getHabitIcon, daysSince } from '../utils';
 import { useHabitStore } from '../store';
 
 type Props = CompositeScreenProps<
@@ -144,35 +150,88 @@ const HomeScreen = ({ navigation }: Props) => {
           <SuccessRate percentage={averageRate} />
         </View>
 
-        {/* Add Habit Button */}
-        <View className="mb-6 gap-4">
-          <Button
-            icon={
-              <MaterialDesignIcons
-                name="plus-circle-outline"
-                size={18}
-                color={colors.black}
-              />
-            }
-            text="Add/Change Habit"
-            className="bg-light_green px-6 py-4 rounded-2xl flex-row items-center justify-center"
-            textClassName="text-black font-bold text-base ml-2"
-            onPress={toNewHabitScreen}
-          />
-          <Button
-            text="Habits"
-            className="rounded-2xl border-light_green border px-6 py-4"
-            textClassName="text-light_green text-base font-bold"
-            onPress={() => navigation.navigate(Routes.Habits)}
-            icon={
-              <MaterialDesignIcons
-                name="format-list-bulleted"
-                size={18}
-                color={colors.light_green}
-              />
-            }
-          />
-        </View>
+        {/* My Habits Preview */}
+        {habits.length > 0 && (
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-off_white text-2xl font-bold">
+                My Habits
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate(Routes.Habits)}
+                className="flex-row items-center"
+                activeOpacity={0.7}
+              >
+                <Text
+                  className="text-sm font-semibold mr-1"
+                  style={{ color: colors.light_green }}
+                >
+                  See All
+                </Text>
+                <MaterialDesignIcons
+                  name="chevron-right"
+                  size={16}
+                  color={colors.light_green}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 12 }}
+            >
+              {habits.slice(0, 5).map(habit => {
+                const icon = getHabitIcon(habit.name);
+                const days = daysSince(habit.created_at);
+                return (
+                  <TouchableOpacity
+                    key={habit.id}
+                    onPress={() =>
+                      navigation.navigate(Routes.HabitDetails, { habit })
+                    }
+                    activeOpacity={0.75}
+                    className="bg-dark_grey rounded-2xl p-4 items-center"
+                    style={{ width: 110 }}
+                  >
+                    <View
+                      className="rounded-2xl p-3 mb-3"
+                      style={{ backgroundColor: colors.icon_bg }}
+                    >
+                      <MaterialDesignIcons
+                        name={icon as any}
+                        size={24}
+                        color={colors.light_green}
+                      />
+                    </View>
+                    <Text
+                      className="text-off_white text-sm font-semibold mb-2 text-center"
+                      numberOfLines={1}
+                    >
+                      {habit.name}
+                    </Text>
+                    <View
+                      className="flex-row items-center px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: colors.icon_bg }}
+                    >
+                      <MaterialDesignIcons
+                        name="fire"
+                        size={10}
+                        color={colors.light_green}
+                      />
+                      <Text
+                        className="text-xs font-semibold ml-1"
+                        style={{ color: colors.light_green }}
+                      >
+                        {days}d
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
       </View>
     </ScrollView>
   );

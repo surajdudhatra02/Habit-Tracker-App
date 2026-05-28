@@ -1,7 +1,10 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { MainTabParamList, Routes, RouteScreens } from './route';
+import { colors } from '../constants';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -47,7 +50,22 @@ const MainTabs = () => {
       <Tab.Screen
         name={Routes.Home}
         component={RouteScreens[Routes.Home]}
-        options={{ headerTitle: 'Habitz' }}
+        options={({ navigation }: any) => ({
+          headerTitle: 'Habitz',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate(Routes.Habits)}
+              activeOpacity={0.7}
+              style={{ marginRight: 16, padding: 4 }}
+            >
+              <MaterialDesignIcons
+                name="menu"
+                size={22}
+                color={colors.off_white}
+              />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name={Routes.Progress}
