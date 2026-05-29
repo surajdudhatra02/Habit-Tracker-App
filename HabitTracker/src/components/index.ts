@@ -11,6 +11,7 @@ import TimePicker from './TimePicker';
 import Popup from './Popup';
 import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
+import BlockingScreen from './BlockingScreen';
 
 export {
   Button,
@@ -27,4 +28,5 @@ export {
   Popup,
   EmptyState,
   LoadingState,
+  BlockingScreen,
 };

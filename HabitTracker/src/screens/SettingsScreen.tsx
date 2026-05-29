@@ -7,15 +7,16 @@ import {
   Linking,
 } from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { Button, Divider, ToggleSwitch } from '../components';
+import { Button, Divider } from '../components';
 import { showInfoToast } from '../utils/toast';
 import DeviceInfo from 'react-native-device-info';
 import { colors } from '../constants';
-import { useAuth } from '../hooks';
+import { useAuth, useAppUpdate } from '../hooks';
 import { Routes } from '../navigation/route';
 
 const SettingsScreen = ({ navigation }: any) => {
   const { logout, user } = useAuth();
+  const { status, message, url } = useAppUpdate();
 
   const displayName =
     user?.user_metadata?.full_name ||
@@ -83,6 +84,55 @@ const SettingsScreen = ({ navigation }: any) => {
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Update Card */}
+      {status === 'soft' && (
+        <View className="px-4 pb-4">
+          <View
+            className="rounded-2xl p-4 flex-row items-center justify-between"
+            style={{
+              backgroundColor: colors.dark_green,
+              borderWidth: 1,
+              borderColor: colors.light_green,
+            }}
+          >
+            <View className="flex-1">
+              <View className="flex-row items-center mb-1">
+                <MaterialDesignIcons
+                  name="cellphone-arrow-down"
+                  color={colors.light_green}
+                  size={22}
+                  style={{ marginRight: 6 }}
+                />
+                <Text className="text-off_white text-base font-bold">
+                  Update Available!
+                </Text>
+              </View>
+              <Text
+                className="text-grey_text text-xs right-2"
+                numberOfLines={2}
+              >
+                {message ||
+                  'A new version is available with exciting new features.'}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                if (url) {
+                  Linking.openURL(url);
+                } else {
+                  showInfoToast('Update', 'App update URL not found.');
+                }
+              }}
+              activeOpacity={0.8}
+              className="bg-light_green px-4 py-2 rounded-xl"
+            >
+              <Text className="text-dark_bg font-bold text-xs">Update</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {/* Appearance */}
       {/* <View className="px-4 pb-4">
