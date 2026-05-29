@@ -8,6 +8,9 @@
 android/keystore.properties
 android/app/*.keystore
 
+google-services.json
+GoogleService-Info.plist
+
 # Xcode
 #
 build/
