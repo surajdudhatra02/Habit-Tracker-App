@@ -1,6 +1,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Required for FCM on Android 13+ (API 33+). On older versions this is granted automatically. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      SCHEDULE_EXACT_ALARM: Required for exact habit reminders on Android 12 (API 31-32).
+      Users may need to grant this manually via Settings → Apps → Special app access → Alarms.
+      In Play Console, declare usage as: "Used to deliver habit reminders at user-specified times."
+    -->
+    <uses-permission
+      android:name="android.permission.SCHEDULE_EXACT_ALARM"
+      android:maxSdkVersion="32" />
+
+    <!--
+      USE_EXACT_ALARM: Replaces SCHEDULE_EXACT_ALARM on Android 13+ (API 33+).
+      Automatically granted — no user prompt needed.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!--
+      RECEIVE_BOOT_COMPLETED: Allows the app to re-register scheduled alarms
+      after the phone restarts (AlarmManager clears all alarms on reboot).
+    -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
       android:name=".MainApplication"
@@ -28,5 +53,15 @@
             <data android:scheme="habitz" />
         </intent-filter>
       </activity>
+
+      <!-- FCM Service: handles foreground messages & token refresh in the background -->
+      <service
+        android:name="io.invertase.firebase.messaging.ReactNativeFirebaseMessagingService"
+        android:exported="false">
+        <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+      </service>
+
     </application>
 </manifest>

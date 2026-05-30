@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from 'react';
 import { supabase } from '../lib/supabase';
-import { useDeepLink } from '../hooks';
+import { useDeepLink, useFCMToken, useNotificationPermission } from '../hooks';
 import { useHabitStore } from '../store';
 
 type AuthContextType = {
@@ -35,6 +35,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+
+  useNotificationPermission(user?.id ?? null);
+  useFCMToken(user?.id ?? null);
 
   const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();

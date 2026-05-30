@@ -6,6 +6,11 @@ import {
   HabitCompletion,
   HabitReminder,
 } from '../types';
+import {
+  cancelHabitReminders,
+  scheduleAllRemindersForHabit,
+} from '../lib/notifee';
+import { showErrorToast } from '../utils/toast';
 
 interface HabitStore {
   habits: Habit[];
@@ -22,6 +27,8 @@ interface HabitStore {
   getHabitReminders: (habitId: string) => Promise<HabitReminder[]>;
   getTodayCompletions: () => Promise<HabitCompletion[]>;
   toggleCompletion: (habitId: string, completed: boolean) => Promise<void>;
+  /** Re-registers all habits' reminders with the OS. Call on app open. */
+  rescheduleAllReminders: () => Promise<void>;
 }
 
 export const useHabitStore = create<HabitStore>((set, get) => ({
@@ -32,7 +39,12 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
   setUserId: userId => {
     set({ userId });
     if (userId) {
-      get().fetchHabits();
+      // Fetch habits then re-register all OS alarms (handles reboot / reinstall)
+      get()
+        .fetchHabits()
+        .then(() => {
+          get().rescheduleAllReminders();
+        });
     } else {
       set({ habits: [] });
     }
@@ -82,6 +94,13 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
           .from('habit_reminders')
           .insert(reminders);
         if (reminderError) throw reminderError;
+
+        // Schedule local OS alarms for each reminder time
+        await scheduleAllRemindersForHabit(
+          habit.id,
+          habit.name,
+          input.reminders,
+        );
       }
 
       await fetchHabits();
@@ -96,7 +115,7 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
     habitId: string,
     updates: Partial<Habit> & { reminders?: string[] },
   ) => {
-    const { fetchHabits } = get();
+    const { fetchHabits, habits } = get();
     try {
       const { reminders, ...habitUpdates } = updates;
       const { error } = await supabase
@@ -123,6 +142,13 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
             );
           if (insertError) throw insertError;
         }
+
+        // Rebuild OS alarms: cancel old ones and schedule new ones
+        const habitName =
+          updates.name ??
+          habits.find(h => h.id === habitId)?.name ??
+          'Your habit';
+        await scheduleAllRemindersForHabit(habitId, habitName, reminders);
       }
       await fetchHabits();
     } catch (error: any) {
@@ -134,6 +160,9 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
   deleteHabit: async (habitId: string) => {
     const { fetchHabits } = get();
     try {
+      // Cancel OS alarms BEFORE deleting from DB
+      await cancelHabitReminders(habitId);
+
       const { error } = await supabase
         .from('habits')
         .delete()
@@ -204,6 +233,41 @@ export const useHabitStore = create<HabitStore>((set, get) => ({
     } catch (error: any) {
       console.error('Error toggling completion:', error.message);
       throw error;
+    }
+  },
+
+  /**
+   * Re-registers all habit reminders with the OS AlarmManager / UNNotificationCenter.
+   * Call this on every app open (after habits are fetched) to handle:
+   *   - Phone reboot (AlarmManager clears all alarms on restart)
+   *   - App update / reinstall
+   *   - Clear app data (Android)
+   */
+  rescheduleAllReminders: async () => {
+    const { habits, getHabitReminders } = get();
+    if (habits.length === 0) return;
+
+    for (const habit of habits) {
+      try {
+        const reminders = await getHabitReminders(habit.id);
+        const enabledTimes = reminders
+          .filter(r => r.is_enabled)
+          .map(r => r.reminder_time);
+
+        if (enabledTimes.length > 0) {
+          await scheduleAllRemindersForHabit(
+            habit.id,
+            habit.name,
+            enabledTimes,
+          );
+        }
+      } catch (err: any) {
+        showErrorToast("Failed to reschedule today's reminders");
+        console.error(
+          `[Reminders] Failed to reschedule for habit ${habit.id}:`,
+          err.message,
+        );
+      }
     }
   },
 }));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,11 +7,21 @@ import { AuthProvider } from './src/context';
 import RootNavigator from './src/navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './src/utils';
-import { useAppUpdate } from './src/hooks';
+import {
+  useAppUpdate,
+  useForegroundNotification,
+} from './src/hooks';
 import { BlockingScreen } from './src/components';
+import { createNotificationChannel } from './src/lib/notifee';
 
 function App() {
   const { status, message, url } = useAppUpdate();
+
+  useForegroundNotification();
+
+  useEffect(() => {
+    createNotificationChannel();
+  }, []);
 
   return (
     <SafeAreaProvider>
