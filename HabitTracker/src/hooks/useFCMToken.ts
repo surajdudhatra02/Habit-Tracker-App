@@ -28,17 +28,20 @@ export const useFCMToken = (userId: string | null) => {
           return;
         }
 
-        const { error } = await supabase.from('device_tokens').upsert(
-          {
-            user_id: userId,
-            token,
-            platform: Platform.OS,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: 'user_id, token',
-          },
-        );
+        // Delete all existing tokens for this user on this platform first.
+        // Prevents stale token buildup when user re-logs in or reinstalls.
+        await supabase
+          .from('device_tokens')
+          .delete()
+          .eq('user_id', userId)
+          .eq('platform', Platform.OS);
+
+        const { error } = await supabase.from('device_tokens').insert({
+          user_id: userId,
+          token,
+          platform: Platform.OS,
+          updated_at: new Date().toISOString(),
+        });
 
         if (error) {
           console.error('[FCM] Failed to save token to DB:', error.message);

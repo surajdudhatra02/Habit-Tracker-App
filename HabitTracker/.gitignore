@@ -11,6 +11,10 @@ android/app/*.keystore
 google-services.json
 GoogleService-Info.plist
 
+# Firebase service account private key if exist
+*firebase-adminsdk*.json
+*service-account*.json
+
 # Xcode
 #
 build/

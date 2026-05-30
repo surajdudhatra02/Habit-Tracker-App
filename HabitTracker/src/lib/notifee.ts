@@ -58,6 +58,7 @@ export const displayFromRemoteMessage = async (
       channelId: NOTIFICATION_CHANNEL_ID,
       importance: AndroidImportance.HIGH,
       pressAction: { id: 'default' },
+      showTimestamp: true,
     },
   });
 };
@@ -160,7 +161,6 @@ export const scheduleAllRemindersForHabit = async (
   habitName: string,
   reminderTimes: string[], // ["08:00", "18:30"]
 ): Promise<void> => {
-
   // Cancel existing reminders first to prevent duplicates
   await cancelHabitReminders(habitId);
 
