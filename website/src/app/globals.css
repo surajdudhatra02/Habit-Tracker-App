@@ -1,0 +1,332 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+/* 
+   All tokens here become utility classes automatically:
+   --color-green-light → text-green-light, bg-green-light, border-green-light
+   --font-display      → font-display
+   --radius-lg         → rounded-lg
+*/
+@theme {
+  /* ── Colors ── */
+  --color-dark-bg: #141414;
+  --color-dark-grey: #1c1c1f;
+  --color-surface-2: #222226;
+  --color-light-grey: #373738;
+  --color-card-border: #2a2a2d;
+  --color-icon-bg: #2a352b;
+  --color-dark-green: #122118;
+
+  --color-app-white: #f0f0f0;
+  --color-off-white: #dddddd;
+  --color-grey-text: #949494;
+  --color-divider: #525252;
+
+  --color-green: #48ea76;
+  --color-green-light: #a5c9a7;
+
+  --color-brand-red: #ff5a5f;
+  --color-brand-yellow: #ffc107;
+
+  /* ── Fonts ── */
+  --font-display: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* ── Border radii ── */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-phone: 44px;
+
+  /* ── Animations ── */
+  --animate-float: floatPhone 4s ease-in-out infinite;
+  --animate-float-slow: floatPhoneSlow 5s ease-in-out infinite;
+  --animate-glow-pulse: glowPulse 3s ease-in-out infinite;
+  --animate-fade-up: fadeInUp 0.6s ease-out both;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatPhone {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(-2deg);
+  }
+}
+
+@keyframes floatPhoneSlow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #141414;
+    color: #f0f0f0;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Outfit", sans-serif;
+    line-height: 1.1;
+    color: #f0f0f0;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  img {
+    max-width: 100%;
+    display: block;
+  }
+  button {
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #141414;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a2d;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #525252;
+  }
+
+  /* Selection */
+  ::selection {
+    background: rgba(72, 234, 118, 0.2);
+    color: #f0f0f0;
+  }
+}
+
+/* ─── Component Classes ──────────────────────────────────── */
+@layer components {
+  /* Container / Section */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    @media (max-width: 768px) {
+      padding: 0 20px;
+    }
+  }
+
+  .section {
+    padding: 100px 0;
+    @media (max-width: 768px) {
+      padding: 70px 0;
+    }
+    @media (max-width: 480px) {
+      padding: 50px 0;
+    }
+  }
+
+  /* Section header */
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    p {
+      font-size: 1.05rem;
+      color: #949494;
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+  }
+
+  /* Primary button */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: #a5c9a7;
+    color: #0d1a0f;
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+
+    &:hover {
+      background: #b8d4ba;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(165, 201, 167, 0.25);
+    }
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  /* Store buttons (Google Play / App Store) */
+  .store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 22px;
+    background: #1c1c1f;
+    border: 1px solid #2a2a2d;
+    border-radius: 14px;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: #f0f0f0;
+    min-width: 170px;
+
+    &:hover {
+      border-color: #a5c9a7;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(165, 201, 167, 0.15);
+      background: #222226;
+    }
+
+    .store-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .store-label {
+      display: flex;
+      flex-direction: column;
+    }
+    .store-label small {
+      font-size: 10px;
+      color: #949494;
+      font-weight: 400;
+      line-height: 1;
+    }
+    .store-label strong {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: "Outfit", sans-serif;
+      line-height: 1.2;
+    }
+  }
+
+  /* Badge pill */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px;
+    background: rgba(165, 201, 167, 0.1);
+    border: 1px solid rgba(165, 201, 167, 0.25);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a5c9a7;
+    letter-spacing: 0.03em;
+  }
+
+  /* Phone mockup frame */
+  .phone-frame {
+    position: relative;
+    border-radius: 44px;
+    overflow: hidden;
+    border: 2px solid #2a2a2d;
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  }
+
+  /* Divider line */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a2a2d, transparent);
+    border: none;
+  }
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #48ea76 0%, #a5c9a7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
