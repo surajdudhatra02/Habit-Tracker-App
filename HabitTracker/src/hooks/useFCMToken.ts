@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react';
-import messaging from '@react-native-firebase/messaging';
+import {
+  AuthorizationStatus,
+  getMessaging,
+  getToken,
+  onTokenRefresh,
+  requestPermission,
+} from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { showErrorToast } from '../utils/toast';
@@ -10,19 +16,21 @@ export const useFCMToken = (userId: string | null) => {
   useEffect(() => {
     if (!userId || registeredRef.current) return;
 
+    const messaging = getMessaging();
+
     const registerToken = async () => {
       try {
-        let authStatus = await messaging().requestPermission();
+        const authStatus = await requestPermission(messaging);
 
         const enabled =
-          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+          authStatus === AuthorizationStatus.AUTHORIZED ||
+          authStatus === AuthorizationStatus.PROVISIONAL;
 
         if (!enabled) {
           return;
         }
 
-        const token = await messaging().getToken();
+        const token = await getToken(messaging);
 
         if (!token) {
           return;
@@ -57,7 +65,7 @@ export const useFCMToken = (userId: string | null) => {
 
     registerToken();
 
-    const unsubscribe = messaging().onTokenRefresh(async newToken => {
+    const unsubscribe = onTokenRefresh(messaging, async newToken => {
       await supabase.from('device_tokens').upsert(
         {
           user_id: userId,

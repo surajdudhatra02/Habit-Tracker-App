@@ -1,9 +1,12 @@
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  setBackgroundMessageHandler,
+} from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { displayFromRemoteMessage } from './notifee';
 
 export const registerBackgroundHandlers = (): void => {
-  messaging().setBackgroundMessageHandler(async remoteMessage => {
+  setBackgroundMessageHandler(getMessaging(), async remoteMessage => {
     if (remoteMessage.notification) {
       return;
     }
