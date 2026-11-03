@@ -13,7 +13,7 @@ import { colors } from '../constants';
 import { useAuth } from '../hooks';
 import { supabase } from '../lib/supabase';
 
-const ProfileInfoScreen = ({ navigation }: any) => {
+const ProfileInfoScreen = () => {
   const { user } = useAuth();
 
   const [displayName, setDisplayName] = useState<string>(
@@ -241,13 +241,16 @@ const ProfileInfoScreen = ({ navigation }: any) => {
                     text: 'Delete',
                     style: 'destructive',
                     onPress: async () => {
-                        const { error } = await supabase.rpc('delete_user');
-                        
-                        if (error) {
-                          Alert.alert('Error', 'Failed to delete account data: ' + error.message);
-                        } else {
-                          await supabase.auth.signOut();
-                        }
+                      const { error } = await supabase.rpc('delete_user');
+
+                      if (error) {
+                        Alert.alert(
+                          'Error',
+                          'Failed to delete account data: ' + error.message,
+                        );
+                      } else {
+                        await supabase.auth.signOut();
+                      }
                     },
                   },
                 ],

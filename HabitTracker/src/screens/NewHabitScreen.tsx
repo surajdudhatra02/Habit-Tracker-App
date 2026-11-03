@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button, Divider, Input, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
+import MotionView from '../components/MotionView';
 import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
@@ -183,120 +184,221 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
   };
 
   return (
-    <>
-      <ScrollView className="bg-dark_bg flex-1">
-        <View className="flex-1 p-6 gap-6">
-          <View className="gap-4">
+    <ScrollView
+      className="bg-dark_bg flex-1"
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 36 }}
+    >
+      <View className="p-6" style={{ gap: 28 }}>
+        <MotionView>
+          <Text className="text-grey_text text-xs font-semibold tracking-widest mb-2">
+            {isEditMode ? 'MAKE IT YOURS' : 'ONE SMALL STEP'}
+          </Text>
+          <Text
+            className="text-white text-3xl font-bold"
+            style={{ letterSpacing: -1 }}
+          >
+            {isEditMode ? 'Refine your routine.' : 'Build a better day.'}
+          </Text>
+          <Text className="text-grey_text text-sm mt-2 leading-5">
+            {isEditMode
+              ? 'A routine that grows with you.'
+              : 'Choose something small. Show up for it every day.'}
+          </Text>
+        </MotionView>
+
+        <MotionView delay={50} style={{ gap: 20 }}>
+          <View>
+            <Text className="text-off_white text-sm font-semibold mb-3">
+              Habit name
+            </Text>
             <Input
-              placeholder="Enter Habit Name"
+              placeholder="e.g. Read a little every day"
               lines={1}
               value={habitName}
               onChangeText={setHabitName}
+              accessibilityLabel="Habit name"
             />
-            <Input
-              placeholder="Enter Description (optional)"
-              lines={5}
-              value={description}
-              onChangeText={setDescription}
-            />
-          </View>
-
-          <View>
-            <Text className="text-off_white text-2xl font-bold mb-4">
-              Reminders
-            </Text>
-
-            {reminders.length > 0 && (
-              <View className="bg-dark_grey rounded-2xl p-4 mb-4">
-                {reminders.map((reminder, index) => (
-                  <React.Fragment key={reminder.id}>
-                    {index > 0 && <Divider />}
-                    <View className="flex-row items-center justify-between py-3">
-                      <View className="flex-row items-center flex-1">
-                        <MaterialDesignIcons
-                          name="clock-outline"
-                          size={24}
-                          color={colors.off_white}
-                        />
-                        <View className="ml-5">
-                          <Text className="text-off_white text-lg font-semibold">
-                            {formatTime(reminder.time)}
-                          </Text>
-                          <Text className="text-light_green text-sm mt-1">
-                            Daily Reminder
-                          </Text>
-                        </View>
-                      </View>
-                      <TouchableOpacity
-                        onPress={() => handleRemoveReminder(reminder.id)}
-                        className="p-2"
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      >
-                        <MaterialDesignIcons
-                          name="close-circle"
-                          size={24}
-                          color={colors.light_grey}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </React.Fragment>
+            {!isEditMode && (
+              <View className="flex-row flex-wrap mt-3" style={{ gap: 8 }}>
+                {['Read', 'Meditate', 'Drink water'].map(suggestion => (
+                  <TouchableOpacity
+                    key={suggestion}
+                    onPress={() => setHabitName(suggestion)}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Use ${suggestion} as habit name`}
+                    className="px-3 py-2 rounded-full border border-card_border"
+                    style={
+                      habitName === suggestion
+                        ? {
+                            backgroundColor: colors.dark_green,
+                            borderColor: colors.light_green,
+                          }
+                        : undefined
+                    }
+                  >
+                    <Text
+                      className="text-grey_text text-xs"
+                      style={
+                        habitName === suggestion
+                          ? { color: colors.light_green }
+                          : undefined
+                      }
+                    >
+                      {suggestion}
+                    </Text>
+                  </TouchableOpacity>
                 ))}
               </View>
             )}
-
-            <Button
-              text="Add time"
-              className="border-light_grey border-2 rounded-2xl py-3"
-              textClassName="text-off_white font-bold text-base"
-              icon={
-                <MaterialDesignIcons
-                  name="plus-circle-outline"
-                  size={18}
-                  color={colors.off_white}
-                />
-              }
-              onPress={handleAddReminder}
-            />
           </View>
-
           <View>
-            <Text className="text-off_white text-2xl font-bold mb-4">
-              Goals
-            </Text>
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-off_white text-sm font-semibold">
+                Your why
+              </Text>
+              <Text className="text-grey_text text-xs">Optional</Text>
+            </View>
             <Input
-              placeholder="Enter goal - e.g. 30 days in a row"
+              placeholder="What makes this habit meaningful to you?"
               lines={3}
-              value={goal}
-              onChangeText={setGoal}
+              multiline
+              value={description}
+              onChangeText={setDescription}
+              accessibilityLabel="Habit description"
+              style={{ minHeight: 96 }}
             />
           </View>
+        </MotionView>
 
-          {showTimePicker && (
-            <TimePicker
-              value={new Date()}
-              onChange={handleTimeSelected}
-              onDismiss={() => setShowTimePicker(false)}
-            />
+        <MotionView delay={100}>
+          <View className="flex-row items-center mb-2">
+            <View
+              className="w-8 h-8 rounded-full items-center justify-center mr-3"
+              style={{ backgroundColor: colors.icon_bg }}
+            >
+              <MaterialDesignIcons
+                name="bell-outline"
+                size={17}
+                color={colors.light_green}
+              />
+            </View>
+            <Text className="text-white text-lg font-semibold">
+              A gentle nudge
+            </Text>
+          </View>
+          <Text className="text-grey_text text-sm leading-5 mb-4">
+            Set a daily reminder to make showing up a little easier.
+          </Text>
+
+          {reminders.length > 0 && (
+            <View
+              className="bg-dark_grey p-4 mb-3 border border-card_border"
+              style={{ borderRadius: 22 }}
+            >
+              {reminders.map((reminder, index) => (
+                <React.Fragment key={reminder.id}>
+                  {index > 0 && <Divider />}
+                  <View className="flex-row items-center justify-between py-3">
+                    <View className="flex-row items-center flex-1">
+                      <MaterialDesignIcons
+                        name="clock-outline"
+                        size={21}
+                        color={colors.light_green}
+                      />
+                      <View className="ml-3">
+                        <Text className="text-white text-lg font-semibold">
+                          {formatTime(reminder.time)}
+                        </Text>
+                        <Text className="text-grey_text text-xs mt-1">
+                          Every day
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => handleRemoveReminder(reminder.id)}
+                      className="p-2"
+                      accessibilityRole="button"
+                      accessibilityLabel={`Remove ${formatTime(reminder.time)} reminder`}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <MaterialDesignIcons
+                        name="close"
+                        size={20}
+                        color={colors.grey_text}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </React.Fragment>
+              ))}
+            </View>
           )}
+          <Button
+            text="Add time"
+            className="border-card_border border rounded-2xl py-4 bg-dark_grey"
+            textClassName="text-light_green font-semibold text-sm"
+            icon={
+              <MaterialDesignIcons
+                name="plus"
+                size={18}
+                color={colors.light_green}
+              />
+            }
+            onPress={handleAddReminder}
+          />
+        </MotionView>
 
+        <MotionView delay={150}>
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-off_white text-sm font-semibold">
+              Set your intention
+            </Text>
+            <Text className="text-grey_text text-xs">Optional</Text>
+          </View>
+          <Input
+            placeholder="e.g. Read 10 pages each day"
+            lines={2}
+            multiline
+            value={goal}
+            onChangeText={setGoal}
+            accessibilityLabel="Habit goal"
+            style={{ minHeight: 76 }}
+          />
+        </MotionView>
+
+        {showTimePicker && (
+          <TimePicker
+            value={new Date()}
+            onChange={handleTimeSelected}
+            onDismiss={() => setShowTimePicker(false)}
+          />
+        )}
+        <MotionView delay={180}>
           <Button
             text={isEditMode ? 'Update Habit' : 'Save Habit'}
-            className="bg-light_green px-6 py-4 rounded-2xl mt-4"
+            className="bg-light_green px-6 py-4 rounded-2xl"
             textClassName="text-black font-bold text-base"
             loading={loading}
             disabled={remindersLoading || reminderLoadFailed}
             loadingColor={colors.black}
             onPress={validateAndSave}
           />
+          <Text className="text-grey_text text-xs text-center mt-3">
+            Small steps. Lasting change.
+          </Text>
           {reminderLoadFailed && (
             <Button
               text="Retry loading reminders"
+              className="py-4 mt-2"
+              textClassName="text-light_green text-sm font-semibold"
               onPress={() => setReminderLoadAttempt(attempt => attempt + 1)}
             />
           )}
-        </View>
-      </ScrollView>
-    </>
+        </MotionView>
+      </View>
+    </ScrollView>
   );
 };
 

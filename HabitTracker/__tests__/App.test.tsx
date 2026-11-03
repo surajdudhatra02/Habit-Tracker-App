@@ -2,18 +2,20 @@
  * @format
  */
 
-import React from 'react';
-import ReactTestRenderer, { act } from 'react-test-renderer';
+import React, { act } from 'react';
+import ReactTestRenderer from 'react-test-renderer';
 import App from '../App';
 import { useAppUpdate, useForegroundNotification } from '../src/hooks';
 import { createNotificationChannel } from '../src/lib/notifee';
 
 // Native boundaries are mocked; this verifies app composition and update
 // blocking behavior. OS-level integration still requires device verification.
+jest.mock('react-native', () => ({ StatusBar: 'StatusBar' }));
 jest.mock('react-native-get-random-values', () => ({}));
 jest.mock('react-native-url-polyfill/auto', () => ({}));
 jest.mock('@react-navigation/native', () => ({
   NavigationContainer: 'NavigationContainer',
+  DarkTheme: { dark: true, colors: {} },
 }));
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaProvider: 'SafeAreaProvider',

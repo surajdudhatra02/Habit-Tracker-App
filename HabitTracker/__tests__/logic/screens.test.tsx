@@ -1,5 +1,5 @@
-import React from 'react';
-import TestRenderer, { act } from 'react-test-renderer';
+import React, { act } from 'react';
+import TestRenderer from 'react-test-renderer';
 import { supabase } from '../../src/lib/supabase';
 import { useHabitStore } from '../../src/store/useHabitStore';
 import { useAuth } from '../../src/hooks/useAuth';
@@ -13,7 +13,21 @@ jest.mock('react-native', () => ({
   ScrollView: 'ScrollView',
   TouchableOpacity: 'TouchableOpacity',
   ActivityIndicator: 'ActivityIndicator',
+  StyleSheet: { create: (styles: unknown) => styles },
   AppState: { addEventListener: () => ({ remove: () => {} }) },
+}));
+// Animation is a native boundary; these tests exercise screen behavior.
+jest.mock('../../src/components/MotionView', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
+jest.mock('../../src/components/Skeleton', () => ({
+  SkeletonBlock: 'SkeletonBlock',
+  HabitListSkeleton: 'HabitListSkeleton',
+  TrendChartSkeleton: 'TrendChartSkeleton',
+}));
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 jest.mock('@react-native-vector-icons/material-design-icons', () => ({
   __esModule: true,

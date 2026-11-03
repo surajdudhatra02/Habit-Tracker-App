@@ -9,10 +9,13 @@ import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
+import MotionView from '../components/MotionView';
 import { useHabitStore } from '../store';
 import { Habit } from '../types';
-import { Button, EmptyState, LoadingState, Popup } from '../components';
-import { getHabitIcon, daysSince, formatDate } from '../utils';
+import { Button, EmptyState, Popup } from '../components';
+import { HabitListSkeleton, SkeletonBlock } from '../components/Skeleton';
+import { showErrorToast } from '../utils/toast';
+import { getHabitIcon, daysSince } from '../utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, Routes } from '../navigation/route';
 
@@ -25,6 +28,7 @@ const HabitsScreen = ({ navigation }: Props) => {
   const deleteHabit = useHabitStore(s => s.deleteHabit);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -32,9 +36,23 @@ const HabitsScreen = ({ navigation }: Props) => {
   // Auto refresh every time screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      fetchHabits();
+      let active = true;
+      fetchHabits()
+        .catch(error => {
+          console.error('Error loading habits:', error);
+          if (active)
+            showErrorToast('Unable to load habits', 'Please try again.');
+        })
+        .finally(() => {
+          if (active) setHasLoaded(true);
+        });
+      return () => {
+        active = false;
+      };
     }, [fetchHabits]),
   );
+
+  const showSkeleton = (!hasLoaded || loading) && habits.length === 0;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -63,31 +81,34 @@ const HabitsScreen = ({ navigation }: Props) => {
 
   return (
     <View className="flex-1 bg-dark_bg">
-      {/* ── Header ── */}
-      <View
-        className="px-6 pt-5 pb-4"
-        style={{ borderBottomColor: colors.card_border, borderBottomWidth: 1 }}
-      >
+      <MotionView className="px-6 pt-5 pb-6">
+        <Text className="text-grey_text text-xs font-semibold tracking-widest mb-2">
+          YOUR DAILY PRACTICE
+        </Text>
         <View className="flex-row items-center justify-between">
           <View className="flex-1 mr-4">
             <Text
-              className="text-3xl font-bold mb-0.5"
-              style={{ color: colors.light_green }}
+              className="text-white text-3xl font-bold"
+              style={{ letterSpacing: -1 }}
             >
-              My Habits
+              My habits
             </Text>
-            <Text className="text-grey_text text-sm">
-              {habits.length > 0
-                ? `${habits.length} active habit${
-                    habits.length !== 1 ? 's' : ''
-                  }`
-                : 'Build your daily routine'}
-            </Text>
+            {showSkeleton ? (
+              <View className="mt-2">
+                <SkeletonBlock width="90%" height={16} />
+              </View>
+            ) : (
+              <Text className="text-grey_text text-sm mt-2">
+                {habits.length > 0
+                  ? `${habits.length} small step${habits.length !== 1 ? 's' : ''} toward a better you.`
+                  : 'Your next chapter starts with one small step.'}
+              </Text>
+            )}
           </View>
-
           <Button
-            text="Add"
-            className="bg-light_green px-4 py-3 rounded-2xl"
+            text="New"
+            accessibilityLabel="Create a new habit"
+            className="bg-light_green px-4 py-3 rounded-full"
             textClassName="text-black font-bold text-sm"
             icon={
               <MaterialDesignIcons name="plus" size={18} color={colors.black} />
@@ -95,69 +116,65 @@ const HabitsScreen = ({ navigation }: Props) => {
             onPress={() => navigation.navigate(Routes.NewHabit)}
           />
         </View>
-
-        {/* Summary strip */}
-        {habits.length > 0 && (
-          <View className="flex-row mt-4 gap-x-3">
+        {showSkeleton ? (
+          <View
+            className="flex-row mt-6 bg-dark_grey border border-card_border rounded-3xl p-4"
+            accessibilityRole="progressbar"
+            accessibilityLabel="Loading habit summary"
+            accessibilityState={{ busy: true }}
+          >
+            {[0, 1, 2].map(index => (
+              <View
+                key={index}
+                className={`flex-1 ${index > 0 ? 'border-l border-card_border pl-4' : ''}`}
+              >
+                <SkeletonBlock width={34} height={28} />
+                <View className="mt-2">
+                  <SkeletonBlock width="80%" height={12} />
+                </View>
+              </View>
+            ))}
+          </View>
+        ) : (
+          habits.length > 0 && (
             <View
-              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: colors.dark_grey }}
+              className="flex-row mt-6 bg-dark_grey border border-card_border p-4"
+              style={{ borderRadius: 22 }}
             >
-              <MaterialDesignIcons
-                name="fire"
-                size={18}
-                color={colors.light_green}
-              />
-              <View className="ml-2">
-                <Text className="text-off_white text-sm font-bold">
+              <View className="flex-1">
+                <Text className="text-light_green text-2xl font-bold">
                   {habits.length}
                 </Text>
-                <Text className="text-grey_text text-xs">Total</Text>
-              </View>
-            </View>
-
-            <View
-              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: colors.dark_grey }}
-            >
-              <MaterialDesignIcons
-                name="calendar-check"
-                size={18}
-                color={colors.light_green}
-              />
-              <View className="ml-2">
-                <Text className="text-off_white text-sm font-bold">
-                  {Math.max(...habits.map(h => daysSince(h.created_at)), 0)}d
+                <Text className="text-grey_text text-xs mt-1">
+                  Active habits
                 </Text>
-                <Text className="text-grey_text text-xs">Oldest</Text>
               </View>
-            </View>
-
-            <View
-              className="flex-1 rounded-2xl px-4 py-3 flex-row items-center"
-              style={{ backgroundColor: colors.dark_grey }}
-            >
-              <MaterialDesignIcons
-                name="star-outline"
-                size={18}
-                color={colors.light_green}
-              />
-              <View className="ml-2">
-                <Text className="text-off_white text-sm font-bold">
+              <View className="flex-1 border-l border-card_border pl-4">
+                <Text className="text-white text-2xl font-bold">
+                  {Math.max(...habits.map(h => daysSince(h.created_at)), 0)}
+                  <Text className="text-grey_text text-sm">d</Text>
+                </Text>
+                <Text className="text-grey_text text-xs mt-1">
+                  Longest active
+                </Text>
+              </View>
+              <View className="flex-1 border-l border-card_border pl-4">
+                <Text
+                  className="text-2xl font-bold"
+                  style={{ color: colors.light_green }}
+                >
                   {habits.filter(h => h.goal).length}
                 </Text>
-                <Text className="text-grey_text text-xs">With Goal</Text>
+                <Text className="text-grey_text text-xs mt-1">With a goal</Text>
               </View>
             </View>
-          </View>
+          )
         )}
-      </View>
-
-      {/* ── List ── */}
+      </MotionView>
       <ScrollView
         className="flex-1 px-6"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: 32 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -167,131 +184,137 @@ const HabitsScreen = ({ navigation }: Props) => {
           />
         }
       >
-        {loading && habits.length === 0 ? (
-          <LoadingState />
+        {showSkeleton ? (
+          <HabitListSkeleton count={4} />
         ) : habits.length === 0 ? (
           <EmptyState onPress={() => navigation.navigate(Routes.NewHabit)} />
         ) : (
-          <View className="gap-y-3">
-            {habits.map((habit: Habit) => {
+          <View style={{ gap: 12 }}>
+            <Text className="text-grey_text text-xs font-semibold tracking-widest mb-1">
+              ALL HABITS
+            </Text>
+            {habits.map((habit: Habit, index) => {
               const days = daysSince(habit.created_at);
               const icon = getHabitIcon(habit.name);
-
+              const accent = [
+                colors.light_green,
+                colors.off_white,
+                colors.light_green,
+              ][index % 3];
+              const iconBackground = [
+                colors.icon_bg,
+                colors.light_grey,
+                colors.dark_green,
+              ][index % 3];
               return (
-                <TouchableOpacity
-                  key={habit.id}
-                  onPress={() =>
-                    navigation.navigate(Routes.HabitDetails, { habit })
-                  }
-                  activeOpacity={0.75}
-                  className="rounded-2xl overflow-hidden"
-                  style={{ backgroundColor: colors.dark_grey }}
-                >
-                  <View className="p-4">
+                <MotionView key={habit.id} delay={Math.min(index, 4) * 50}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate(Routes.HabitDetails, { habit })
+                    }
+                    activeOpacity={0.75}
+                    accessibilityRole="button"
+                    accessibilityLabel={`View ${habit.name}`}
+                    className="bg-dark_grey border border-card_border p-4"
+                    style={{ borderRadius: 22 }}
+                  >
                     <View className="flex-row items-start">
                       <View
-                        className="rounded-2xl p-3 mr-4"
-                        style={{ backgroundColor: colors.icon_bg }}
+                        className="w-12 h-12 items-center justify-center mr-4"
+                        style={{
+                          backgroundColor: iconBackground,
+                          borderRadius: 16,
+                        }}
                       >
                         <MaterialDesignIcons
                           name={icon as any}
                           size={24}
-                          color={colors.light_green}
+                          color={accent}
                         />
                       </View>
-
                       <View className="flex-1">
-                        <View className="flex-row items-center justify-between mb-1">
-                          <Text
-                            className="text-off_white text-base font-bold flex-1 mr-2"
-                            numberOfLines={1}
-                          >
-                            {habit.name}
-                          </Text>
-                          <View className="flex-row items-center">
-                            <TouchableOpacity
-                              onPress={() => {
-                                setHabitToDelete(habit);
-                                setShowDeletePopup(true);
-                              }}
-                              className="mr-3"
-                            >
-                              <MaterialDesignIcons
-                                name="trash-can-outline"
-                                size={20}
-                                color={colors.red}
-                              />
-                            </TouchableOpacity>
-                            <MaterialDesignIcons
-                              name="chevron-right"
-                              size={20}
-                              color={colors.grey_text}
-                            />
-                          </View>
-                        </View>
-
+                        <Text
+                          className="text-white text-base font-semibold"
+                          numberOfLines={2}
+                        >
+                          {habit.name}
+                        </Text>
                         {habit.description ? (
                           <Text
-                            className="text-grey_text text-sm leading-5 mb-2"
+                            className="text-grey_text text-sm leading-5 mt-1"
                             numberOfLines={2}
                           >
                             {habit.description}
                           </Text>
-                        ) : null}
-
-                        <View className="flex-row items-center flex-wrap gap-x-2 gap-y-1.5 mt-1">
-                          <View
-                            className="flex-row items-center px-2.5 py-1 rounded-full"
-                            style={{ backgroundColor: colors.icon_bg }}
-                          >
+                        ) : (
+                          <Text className="text-grey_text text-sm mt-1">
+                            A little progress, every day.
+                          </Text>
+                        )}
+                        <View
+                          className="flex-row flex-wrap items-center mt-3"
+                          style={{ gap: 8 }}
+                        >
+                          <View className="flex-row items-center">
                             <MaterialDesignIcons
-                              name="fire"
-                              size={11}
-                              color={colors.light_green}
+                              name="calendar-outline"
+                              size={12}
+                              color={colors.grey_text}
                             />
-                            <Text
-                              className="text-xs font-semibold ml-1"
-                              style={{ color: colors.light_green }}
-                            >
-                              {days}d
+                            <Text className="text-grey_text text-xs ml-1">
+                              {days} days active
                             </Text>
                           </View>
-
                           {habit.goal ? (
                             <View
-                              className="flex-row items-center px-2.5 py-1 rounded-full"
-                              style={{ backgroundColor: colors.goal_bg }}
+                              className="flex-row items-center px-2 py-1 rounded-full"
+                              style={{
+                                backgroundColor: colors.icon_bg,
+                                maxWidth: 150,
+                              }}
                             >
                               <MaterialDesignIcons
                                 name="flag-outline"
                                 size={11}
-                                color="#8B8BCC"
+                                color={colors.light_green}
                               />
                               <Text
-                                className="text-xs font-medium ml-1"
+                                className="text-xs ml-1 flex-shrink"
                                 numberOfLines={1}
-                                style={{ color: '#8B8BCC', maxWidth: 120 }}
+                                style={{ color: colors.light_green }}
                               >
                                 {habit.goal}
                               </Text>
                             </View>
                           ) : null}
-
-                          <View className="flex-row items-center">
-                            <MaterialDesignIcons
-                              name="calendar-outline"
-                              size={11}
-                              color={colors.grey_text}
-                            />
-                            <Text className="text-grey_text text-xs ml-1">
-                              {formatDate(habit.created_at, true)}
-                            </Text>
-                          </View>
                         </View>
                       </View>
+                      <View className="items-center ml-2">
+                        <MaterialDesignIcons
+                          name="chevron-right"
+                          size={21}
+                          color={colors.grey_text}
+                        />
+                        <TouchableOpacity
+                          onPress={() => {
+                            setHabitToDelete(habit);
+                            setShowDeletePopup(true);
+                          }}
+                          className="p-2 mt-3"
+                          accessibilityRole="button"
+                          accessibilityLabel={`Delete ${habit.name}`}
+                          hitSlop={8}
+                        >
+                          <MaterialDesignIcons
+                            name="trash-can-outline"
+                            size={17}
+                            color={colors.grey_text}
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </MotionView>
               );
             })}
           </View>

@@ -12,7 +12,7 @@
 //       Free limit = 500,000/month → you use 0.3% ✅
 // supabase/functions/send-broadcast-notification/index.ts
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -141,7 +141,7 @@ async function sendToToken(
 
 // ── Main Handler ──────────────────────────────────────────────────────────────
 
-Deno.serve(async _req => {
+Deno.serve(async (_req: Request): Promise<Response> => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   // ── Step 1: Load notification config ─────────────────────────────────────
@@ -254,7 +254,8 @@ Deno.serve(async _req => {
   }
 
   const successCount = results.filter(
-    r => r.status === 'fulfilled' && r.value === true,
+    (r: PromiseSettledResult<boolean>) =>
+      r.status === 'fulfilled' && r.value === true,
   ).length;
   const failCount = results.length - successCount;
 

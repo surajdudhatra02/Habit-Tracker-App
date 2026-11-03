@@ -6,19 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
-      SCHEDULE_EXACT_ALARM: Required for exact habit reminders on Android 12 (API 31-32).
-      Users may need to grant this manually via Settings → Apps → Special app access → Alarms.
-      In Play Console, declare usage as: "Used to deliver habit reminders at user-specified times."
+      Exact habit reminders use user-approved Alarms & reminders access on Android 12+.
+      Without access, the app schedules approximate reminders using WorkManager.
+      USE_EXACT_ALARM is restricted to dedicated alarm/timer/calendar use cases.
     -->
-    <uses-permission
-      android:name="android.permission.SCHEDULE_EXACT_ALARM"
-      android:maxSdkVersion="32" />
-
-    <!--
-      USE_EXACT_ALARM: Replaces SCHEDULE_EXACT_ALARM on Android 13+ (API 33+).
-      Automatically granted — no user prompt needed.
-    -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <!--
       RECEIVE_BOOT_COMPLETED: Allows the app to re-register scheduled alarms

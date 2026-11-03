@@ -1,6 +1,6 @@
-import React from 'react';
-import TestRenderer, { act } from 'react-test-renderer';
-import { Alert } from 'react-native';
+import React, { act } from 'react';
+import TestRenderer from 'react-test-renderer';
+import { Alert, Platform } from 'react-native';
 import {
   getToken,
   onTokenRefresh,
@@ -17,6 +17,20 @@ import { memoryBackend } from './memoryBackend';
 jest.mock('react-native', () => ({
   Platform: { OS: 'android', Version: 31 },
   Alert: { alert: jest.fn() },
+  AppState: {
+    addEventListener: (_event: string, listener: (state: string) => void) => {
+      mockAppStateListener = listener;
+      return { remove: jest.fn() };
+    },
+  },
+}));
+jest.mock('../../src/store/useHabitStore', () => ({
+  useHabitStore: {
+    getState: () => ({
+      userId: mockReminderUserId,
+      rescheduleAllReminders: mockRescheduleReminders,
+    }),
+  },
 }));
 jest.mock('@react-native-firebase/messaging', () => ({
   AuthorizationStatus: { AUTHORIZED: 1, PROVISIONAL: 2 },
@@ -44,12 +58,18 @@ jest.mock('../../src/hooks/useAuth', () => ({ useAuth: jest.fn() }));
 jest.mock('../../src/utils/toast', () => ({ showErrorToast: jest.fn() }));
 
 let renderer: TestRenderer.ReactTestRenderer | undefined;
+let mockAppStateListener: (state: string) => void;
+let mockReminderUserId: string | null = 'alice';
+const mockRescheduleReminders = jest.fn();
 let errorLog: jest.SpyInstance;
 let backend: ReturnType<typeof memoryBackend>;
 
 beforeEach(() => {
   (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
   jest.resetAllMocks();
+  Object.assign(Platform, { OS: 'android', Version: 31 });
+  mockReminderUserId = 'alice';
+  mockRescheduleReminders.mockResolvedValue(undefined);
   errorLog = jest.spyOn(console, 'error').mockImplementation(() => {});
   backend = memoryBackend();
   (supabase.from as jest.Mock).mockImplementation(backend.from);
@@ -265,17 +285,69 @@ test('a missing backend function keeps the last successful progress and logs a r
   expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('p_timezone'));
 });
 
-test('disabled exact alarms on Android 12 prompt the user to enable reminders', async () => {
-  const PermissionProbe = () => {
-    useNotificationPermission('alice');
-    return null;
-  };
+test.each([31, 33, 36])(
+  'disabled exact alarms on Android API %s offer user-approved reminders',
+  async version => {
+    Object.assign(Platform, { Version: version });
+    const PermissionProbe = () => {
+      useNotificationPermission('alice');
+      return null;
+    };
+    await act(async () => {
+      renderer = TestRenderer.create(<PermissionProbe />);
+    });
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Enable Exact Reminders',
+      expect.stringContaining('Android may delay your reminders'),
+      expect.any(Array),
+    );
+  },
+);
+
+const ReminderPermissionProbe = () => {
+  useNotificationPermission('alice');
+  return null;
+};
+
+test('returning after granting alarm access upgrades reminder schedules once', async () => {
   await act(async () => {
-    renderer = TestRenderer.create(<PermissionProbe />);
+    renderer = TestRenderer.create(<ReminderPermissionProbe />);
   });
-  expect(Alert.alert).toHaveBeenCalledWith(
-    'Enable Exact Reminders',
-    expect.any(String),
-    expect.any(Array),
-  );
+  (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({
+    android: { alarm: 1 },
+  });
+  await act(async () => {
+    mockAppStateListener('active');
+  });
+  expect(mockRescheduleReminders).toHaveBeenCalledTimes(1);
+  await act(async () => {
+    mockAppStateListener('active');
+  });
+  expect(mockRescheduleReminders).toHaveBeenCalledTimes(1);
+  expect(Alert.alert).toHaveBeenCalledTimes(1);
+});
+
+test('declining alarm access keeps the app usable without rescheduling or repeated prompts', async () => {
+  await act(async () => {
+    renderer = TestRenderer.create(<ReminderPermissionProbe />);
+  });
+  await act(async () => {
+    mockAppStateListener('active');
+  });
+  expect(mockRescheduleReminders).not.toHaveBeenCalled();
+  expect(Alert.alert).toHaveBeenCalledTimes(1);
+});
+
+test('a settings return cannot restore reminders for a different signed-in account', async () => {
+  await act(async () => {
+    renderer = TestRenderer.create(<ReminderPermissionProbe />);
+  });
+  mockReminderUserId = 'bob';
+  (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({
+    android: { alarm: 1 },
+  });
+  await act(async () => {
+    mockAppStateListener('active');
+  });
+  expect(mockRescheduleReminders).not.toHaveBeenCalled();
 });

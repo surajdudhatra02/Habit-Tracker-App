@@ -2,22 +2,26 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainTabs from './MainTabs';
 import { RootStackParamList, Routes, RouteScreens } from './route';
+import { colors } from '../constants';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
-  const Stack = createNativeStackNavigator<RootStackParamList>();
   return (
     <Stack.Navigator
       screenOptions={{
         headerBackButtonDisplayMode: 'minimal',
         headerStyle: {
-          backgroundColor: '#141414',
+          backgroundColor: colors.dark_bg,
         },
-        headerTintColor: '#ede8e8',
+        headerTintColor: colors.off_white,
         headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 26,
+          fontWeight: '600',
+          fontSize: 17,
         },
         headerTitleAlign: 'center',
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: colors.dark_bg },
       }}
     >
       <Stack.Screen

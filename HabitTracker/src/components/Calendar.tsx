@@ -25,6 +25,8 @@ const CalendarComponent = ({
   return (
     <Calendar
       maxDate={formattedToday}
+      firstDay={1}
+      enableSwipeMonths
       markedDates={markedDates}
       markingType="dot"
       onMonthChange={onMonthChange}
@@ -32,8 +34,14 @@ const CalendarComponent = ({
       theme={{
         calendarBackground: 'transparent',
         monthTextColor: colors.light_green,
-        textMonthFontWeight: 'semibold',
-        arrowColor: colors.light_grey,
+        textMonthFontWeight: '700',
+        textMonthFontSize: 15,
+        textDayFontSize: 13,
+        textDayHeaderFontSize: 10,
+        textDayHeaderFontWeight: '600',
+        textSectionTitleColor: colors.grey_text,
+        textDisabledColor: colors.divider_grey,
+        arrowColor: colors.off_white,
         dayTextColor: colors.off_white,
         selectedDayTextColor: colors.dark_bg,
         selectedDayBackgroundColor: colors.light_green,

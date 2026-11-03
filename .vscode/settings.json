@@ -1,0 +1,5 @@
+{
+  "deno.enablePaths": ["./HabitTracker/supabase/functions"],
+  "deno.config": "./HabitTracker/supabase/functions/send-broadcast-notification/deno.json",
+  "deno.path": "./HabitTracker/node_modules/deno/deno"
+}

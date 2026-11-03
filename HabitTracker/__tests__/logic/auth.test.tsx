@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import TestRenderer, { act } from 'react-test-renderer';
+import React, { act, useContext } from 'react';
+import TestRenderer from 'react-test-renderer';
 import { AuthContext, AuthProvider } from '../../src/context/AuthContext';
 import { supabase } from '../../src/lib/supabase';
 

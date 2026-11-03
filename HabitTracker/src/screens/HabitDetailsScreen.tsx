@@ -3,9 +3,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Popup } from '../components';
 import { colors } from '../constants';
+import MotionView from '../components/MotionView';
 import { useHabitStore } from '../store';
 import { Habit, HabitReminder } from '../types';
-import { formatDate, formatTime, daysSince } from '../utils';
+import { formatDate, formatTime, daysSince, getHabitIcon } from '../utils';
 import { showErrorToast } from '../utils/toast';
 
 const HabitDetailsScreen = ({ route, navigation }: any) => {
@@ -58,195 +59,170 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
 
   return (
     <View className="flex-1 bg-dark_bg">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Hero Card */}
-        <View className="mx-6 mt-6 bg-dark_grey rounded-2xl p-5">
-          <View className="flex-row items-center mb-4">
-            <View
-              className="p-4 rounded-2xl mr-4"
-              style={{ backgroundColor: '#2a352b' }}
-            >
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 24, paddingBottom: 36 }}
+      >
+        <MotionView>
+          <Text className="text-grey_text text-xs font-semibold tracking-widest mb-5">
+            YOUR ROUTINE
+          </Text>
+          <View className="flex-row items-start mb-5">
+            <View className="bg-dark_green rounded-2xl p-4 mr-4">
               <MaterialDesignIcons
-                name="repeat"
+                name={getHabitIcon(habit.name) as any}
                 size={28}
                 color={colors.light_green}
               />
             </View>
             <View className="flex-1">
-              <Text className="text-off_white text-2xl font-bold leading-7">
+              <Text className="text-white text-3xl font-bold leading-9">
                 {habit.name}
               </Text>
-              <Text className="text-grey_text text-sm mt-1">Active Habit</Text>
+              <View className="flex-row items-center mt-2">
+                <View className="w-1.5 h-1.5 rounded-full bg-light_green mr-2" />
+                <Text className="text-grey_text text-sm">Daily habit</Text>
+              </View>
             </View>
           </View>
-
           {habit.description ? (
-            <View className="bg-light_grey rounded-2xl p-4">
-              <Text className="text-grey_text text-xs font-semibold uppercase mb-1 tracking-widest">
-                Description
-              </Text>
-              <Text className="text-off_white text-base leading-6">
-                {habit.description}
-              </Text>
-            </View>
+            <Text className="text-grey_text text-base leading-6 mb-6">
+              {habit.description}
+            </Text>
           ) : null}
-        </View>
+        </MotionView>
+        <MotionView delay={60} className="flex-row gap-3 mb-6">
+          <View className="flex-1 bg-dark_grey border border-card_border rounded-3xl p-5">
+            <MaterialDesignIcons
+              name="calendar-outline"
+              size={20}
+              color={colors.light_green}
+            />
+            <Text className="text-white text-3xl font-bold mt-4">
+              {daysSince(habit.created_at)}
+            </Text>
+            <Text className="text-grey_text text-xs mt-1">Days active</Text>
+          </View>
+          <View className="flex-1 bg-dark_grey border border-card_border rounded-3xl p-5">
+            <MaterialDesignIcons
+              name="bell-outline"
+              size={20}
+              color={colors.light_green}
+            />
+            <Text className="text-white text-3xl font-bold mt-4">
+              {reminders.filter(r => r.is_enabled).length}
+            </Text>
+            <Text className="text-grey_text text-xs mt-1">
+              Active reminders
+            </Text>
+          </View>
+        </MotionView>
 
-        {/* Goal */}
         {habit.goal ? (
-          <View className="mx-6 mt-4 bg-dark_grey rounded-2xl p-5">
+          <MotionView
+            delay={100}
+            className="bg-dark_grey border border-card_border rounded-3xl p-5 mb-6"
+          >
             <View className="flex-row items-center mb-3">
               <MaterialDesignIcons
                 name="flag-outline"
                 size={18}
                 color={colors.light_green}
               />
-              <Text className="text-light_green text-sm font-semibold uppercase ml-2 tracking-widest">
-                Goal
+              <Text className="text-light_green text-xs font-semibold tracking-widest ml-2">
+                THE GOAL
               </Text>
             </View>
-            <Text className="text-off_white text-base leading-6">
-              {habit.goal}
-            </Text>
-          </View>
+            <Text className="text-white text-base leading-6">{habit.goal}</Text>
+          </MotionView>
         ) : null}
 
-        {/* Stats Row */}
-        <View className="mx-6 mt-4 flex-row gap-x-3">
-          <View className="flex-1 bg-dark_grey rounded-2xl p-4 items-center">
-            <MaterialDesignIcons
-              name="fire"
-              size={26}
-              color={colors.light_green}
-            />
-            <Text className="text-off_white text-xl font-bold mt-2">
-              {daysSince(habit.created_at)}
-            </Text>
-            <Text className="text-grey_text text-xs mt-1 text-center">
-              Days Active
-            </Text>
-          </View>
-
-          <View className="flex-1 bg-dark_grey rounded-2xl p-4 items-center">
-            <MaterialDesignIcons
-              name="bell-outline"
-              size={26}
-              color={colors.light_green}
-            />
-            <Text className="text-off_white text-xl font-bold mt-2">
-              {reminders.filter(r => r.is_enabled).length}
-            </Text>
-            <Text className="text-grey_text text-xs mt-1 text-center">
-              Reminders
-            </Text>
-          </View>
-        </View>
-
-        {/* Timeline */}
-        <View className="mx-6 mt-4 bg-dark_grey rounded-2xl p-5">
-          <Text className="text-grey_text text-xs font-semibold uppercase mb-4 tracking-widest">
-            Timeline
-          </Text>
-          <View className="flex-row items-center mb-4">
-            <View className="bg-light_grey p-2 rounded-2xl mr-3">
-              <MaterialDesignIcons
-                name="calendar-plus"
-                size={16}
-                color={colors.light_green}
-              />
+        {reminders.length > 0 && (
+          <MotionView delay={140} className="mb-6">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-white text-lg font-bold">
+                A little nudge
+              </Text>
+              <Text className="text-grey_text text-xs">Every day</Text>
             </View>
-            <View>
-              <Text className="text-grey_text text-xs mb-0.5">Created</Text>
-              <Text className="text-off_white text-sm font-medium">
+            <View className="bg-dark_grey border border-card_border rounded-3xl px-5 py-1">
+              {reminders.map((reminder, index) => (
+                <View
+                  key={reminder.id}
+                  className={`flex-row items-center justify-between py-4 ${
+                    index < reminders.length - 1
+                      ? 'border-b border-card_border'
+                      : ''
+                  }`}
+                >
+                  <View className="flex-row items-center">
+                    <View className="bg-icon_bg p-2.5 rounded-xl mr-3">
+                      <MaterialDesignIcons
+                        name="clock-outline"
+                        size={18}
+                        color={colors.light_green}
+                      />
+                    </View>
+                    <Text className="text-white text-base font-semibold">
+                      {formatTime(reminder.reminder_time)}
+                    </Text>
+                  </View>
+                  <View
+                    className={`px-3 py-1.5 rounded-full ${reminder.is_enabled ? 'bg-dark_green' : 'bg-light_grey'}`}
+                  >
+                    <Text
+                      className={`text-xs font-semibold ${reminder.is_enabled ? 'text-light_green' : 'text-grey_text'}`}
+                    >
+                      {reminder.is_enabled ? 'On' : 'Off'}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </MotionView>
+        )}
+
+        <Text className="text-white text-lg font-bold mb-3">The details</Text>
+        <View className="bg-dark_grey border border-card_border rounded-3xl p-5 mb-6">
+          <View className="flex-row items-start mb-5">
+            <MaterialDesignIcons
+              name="calendar-plus"
+              size={19}
+              color={colors.grey_text}
+            />
+            <View className="flex-1 ml-3">
+              <Text className="text-grey_text text-xs mb-1">Started</Text>
+              <Text className="text-white text-sm leading-5">
                 {formatDate(habit.created_at)}
               </Text>
             </View>
           </View>
-
-          <View className="flex-row items-center">
-            <View className="bg-light_grey p-2 rounded-2xl mr-3">
-              <MaterialDesignIcons
-                name="calendar-edit"
-                size={16}
-                color={colors.light_green}
-              />
-            </View>
-            <View>
-              <Text className="text-grey_text text-xs mb-0.5">
-                Last Updated
-              </Text>
-              <Text className="text-off_white text-sm font-medium">
+          <View className="flex-row items-start">
+            <MaterialDesignIcons
+              name="calendar-edit"
+              size={19}
+              color={colors.grey_text}
+            />
+            <View className="flex-1 ml-3">
+              <Text className="text-grey_text text-xs mb-1">Last updated</Text>
+              <Text className="text-white text-sm leading-5">
                 {formatDate(habit.updated_at)}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Reminders */}
-        {reminders.length > 0 && (
-          <View className="mx-6 mt-4 bg-dark_grey rounded-2xl p-5">
-            <View className="flex-row items-center mb-4">
-              <MaterialDesignIcons
-                name="bell-ring-outline"
-                size={18}
-                color={colors.light_green}
-              />
-              <Text className="text-grey_text text-xs font-semibold uppercase ml-2 tracking-widest">
-                Reminders
-              </Text>
-            </View>
-
-            {reminders.map((reminder, index) => (
-              <View
-                key={reminder.id}
-                className={`flex-row items-center justify-between py-3 ${
-                  index < reminders.length - 1
-                    ? 'border-b border-light_grey'
-                    : ''
-                }`}
-              >
-                <View className="flex-row items-center">
-                  <View className="bg-light_grey p-2 rounded-2xl mr-3">
-                    <MaterialDesignIcons
-                      name="clock-outline"
-                      size={16}
-                      color={colors.light_green}
-                    />
-                  </View>
-                  <Text className="text-off_white text-base font-medium">
-                    {formatTime(reminder.reminder_time)}
-                  </Text>
-                </View>
-                <View
-                  className={`px-3 py-1 rounded-full ${
-                    reminder.is_enabled ? 'bg-dark_green' : 'bg-light_grey'
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-semibold ${
-                      reminder.is_enabled
-                        ? 'text-light_green'
-                        : 'text-grey_text'
-                    }`}
-                  >
-                    {reminder.is_enabled ? 'On' : 'Off'}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Buttons */}
-        <View className="px-6 pt-4 pb-8 gap-y-3 mt-4">
+        <View className="gap-3">
           <Button
             text="Edit Habit"
+            accessibilityLabel="Edit this habit"
             className="bg-light_green rounded-2xl py-4"
             textClassName="text-black font-bold text-base"
             icon={
               <MaterialDesignIcons
                 name="pencil-outline"
-                size={20}
+                size={19}
                 color={colors.black}
               />
             }
@@ -260,34 +236,26 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
               })
             }
           />
-
           <Button
             text="Delete Habit"
-            className="bg-dark_grey border border-light_grey rounded-2xl py-4"
-            textClassName="text-base font-semibold text-red"
-            icon={
-              <MaterialDesignIcons
-                name="trash-can-outline"
-                size={20}
-                color={colors.red}
-              />
-            }
+            accessibilityLabel="Delete this habit"
+            className="border border-card_border rounded-2xl py-4"
+            textClassName="text-sm font-semibold text-red"
             onPress={() => setShowDeletePopup(true)}
           />
         </View>
-
-        <Popup
-          visible={showDeletePopup}
-          type="warning"
-          title="Delete Habit?"
-          message={`Are you sure you want to delete "${habit.name}"? This action cannot be undone.`}
-          showCancel={true}
-          confirmText={deleting ? 'Deleting...' : 'Delete'}
-          cancelText="Cancel"
-          onConfirm={handleDelete}
-          onCancel={() => setShowDeletePopup(false)}
-        />
       </ScrollView>
+      <Popup
+        visible={showDeletePopup}
+        type="warning"
+        title="Delete Habit?"
+        message={`Are you sure you want to delete "${habit.name}"? This action cannot be undone.`}
+        showCancel={true}
+        confirmText={deleting ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeletePopup(false)}
+      />
     </View>
   );
 };

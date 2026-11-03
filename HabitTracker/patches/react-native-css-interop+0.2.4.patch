@@ -1,0 +1,78 @@
+diff --git a/node_modules/react-native-css-interop/dist/metro/index.js b/node_modules/react-native-css-interop/dist/metro/index.js
+--- a/node_modules/react-native-css-interop/dist/metro/index.js
++++ b/node_modules/react-native-css-interop/dist/metro/index.js
+@@ -12,6 +12,7 @@
+ const css_to_rn_1 = require("../css-to-rn");
+ const expo_1 = require("./expo");
+ let haste;
++let hasteRootDir;
+ let virtualModulesPossible = undefined;
+ const virtualModules = new Map();
+ const outputDirectory = path_1.default.resolve(__dirname, "../../.cache");
+@@ -99,6 +100,7 @@
+                             .getDependencyGraph()
+                             .then(async (graph) => {
+                             haste = graph._haste;
++                            hasteRootDir = config.projectRoot;
+                             ensureFileSystemPatched(graph._fileSystem);
+                             ensureBundlerPatched(bundler);
+                         });
+@@ -177,6 +179,19 @@
+                 : getNativeJS((0, css_to_rn_1.cssToReactNativeRuntime)(css, options), debug)));
+             debug(`virtualStyles.emit ${platform}`);
+             haste.emit("change", {
++                // Current Metro consumes canonical paths and public file metadata.
++                // Keep eventsQueue below for older Metro versions.
++                rootDir: hasteRootDir,
++                changes: {
++                    addedDirectories: [],
++                    removedDirectories: [],
++                    addedFiles: [],
++                    modifiedFiles: [[path_1.default.relative(hasteRootDir, filePath), {
++                        isSymlink: false,
++                        modifiedTime: Date.now(),
++                    }]],
++                    removedFiles: [],
++                },
+                 eventsQueue: [
+                     {
+                         filePath,
+diff --git a/node_modules/react-native-css-interop/src/metro/index.ts b/node_modules/react-native-css-interop/src/metro/index.ts
+--- a/node_modules/react-native-css-interop/src/metro/index.ts
++++ b/node_modules/react-native-css-interop/src/metro/index.ts
+@@ -74,6 +74,7 @@
+ export type GetCSSForPlatformOnChange = (platform: string) => void;
+ 
+ let haste: any;
++let hasteRootDir: string;
+ let virtualModulesPossible: undefined | Promise<void> = undefined;
+ const virtualModules = new Map<string, Promise<string | Buffer>>();
+ const outputDirectory = path.resolve(__dirname, "../../.cache");
+@@ -228,6 +229,7 @@
+               .getDependencyGraph()
+               .then(async (graph: any) => {
+                 haste = graph._haste;
++                hasteRootDir = config.projectRoot;
+                 ensureFileSystemPatched(graph._fileSystem);
+                 ensureBundlerPatched(bundler);
+               });
+@@ -342,6 +344,19 @@
+ 
+         debug(`virtualStyles.emit ${platform}`);
+         haste.emit("change", {
++          // Current Metro consumes canonical paths and public file metadata.
++          // Keep eventsQueue below for older Metro versions.
++          rootDir: hasteRootDir,
++          changes: {
++            addedDirectories: [],
++            removedDirectories: [],
++            addedFiles: [],
++            modifiedFiles: [[path.relative(hasteRootDir, filePath), {
++              isSymlink: false,
++              modifiedTime: Date.now(),
++            }]],
++            removedFiles: [],
++          },
+           eventsQueue: [
+             {
+               filePath,

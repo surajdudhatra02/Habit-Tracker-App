@@ -1,5 +1,5 @@
-import React from 'react';
-import TestRenderer, { act } from 'react-test-renderer';
+import React, { act } from 'react';
+import TestRenderer from 'react-test-renderer';
 import { getDateRange, getLocalDateString } from '../../src/utils/dateUtils';
 import { useToday } from '../../src/hooks/useToday';
 

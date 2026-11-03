@@ -1,0 +1,5 @@
+{
+  "deno.enablePaths": ["./supabase/functions"],
+  "deno.config": "./supabase/functions/send-broadcast-notification/deno.json",
+  "deno.path": "./node_modules/deno/deno"
+}

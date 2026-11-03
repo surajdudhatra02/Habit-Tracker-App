@@ -1,5 +1,5 @@
-import React from 'react';
-import TestRenderer, { act } from 'react-test-renderer';
+import React, { act } from 'react';
+import TestRenderer from 'react-test-renderer';
 import { Linking, Platform, Share } from 'react-native';
 import SettingsScreen from '../../src/screens/SettingsScreen';
 import { showErrorToast } from '../../src/utils/toast';
@@ -13,11 +13,26 @@ jest.mock('react-native', () => ({
   Share: { share: jest.fn() },
   Linking: { openURL: jest.fn() },
 }));
+// Animation is a native boundary; these tests exercise screen behavior.
+jest.mock('../../src/components/MotionView', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
 jest.mock('@react-native-vector-icons/material-design-icons', () => ({
   __esModule: true,
   default: 'Icon',
 }));
-jest.mock('react-native-device-info', () => ({ getVersion: () => '1.0.0' }));
+jest.mock('react-native-device-info', () => ({
+  getVersion: () => '1.0.0',
+  getBuildNumber: () => '42',
+}));
+jest.mock('../../src/components/BrandLogo', () => ({
+  __esModule: true,
+  default: 'BrandLogo',
+}));
 jest.mock('../../src/components', () => ({
   Button: 'Button',
   Divider: 'Divider',

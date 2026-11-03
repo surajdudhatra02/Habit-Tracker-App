@@ -1,5 +1,7 @@
 import notifee, {
+  AlarmType,
   AndroidImportance,
+  AndroidNotificationSetting,
   AuthorizationStatus,
   EventType,
   RepeatFrequency,
@@ -65,11 +67,11 @@ export const displayFromRemoteMessage = async (
 
 // ── Local Habit Reminder Scheduling ──────────────────────────────────────────
 // Uses Notifee TriggerNotifications backed by:
-//   Android → AlarmManager.setExactAndAllowWhileIdle() (fires in Doze mode)
+//   Android → exact AlarmManager when allowed, approximate WorkManager otherwise
 //   iOS     → UNUserNotificationCenter (OS-managed, app does not need to run)
 //
 // The OS fires these even when the app is KILLED. No JS code runs to trigger
-// them — they are scheduled into the OS kernel at creation time.
+// them — scheduling is managed by the OS. Approximate delivery may be delayed.
 
 const REMINDER_PREFIX = 'habit-reminder-';
 
@@ -119,16 +121,23 @@ export const scheduleHabitReminder = async (
   const [hoursStr, minutesStr] = reminderTime.split(':');
   const hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
+  let useExactAlarm = Platform.OS === 'android';
+  if (useExactAlarm && Number(Platform.Version) >= 31) {
+    const settings = await notifee.getNotificationSettings();
+    useExactAlarm =
+      settings.android.alarm === AndroidNotificationSetting.ENABLED;
+  }
 
   const trigger: TimestampTrigger = {
     type: TriggerType.TIMESTAMP,
     timestamp: nextOccurrenceMs(hours, minutes),
     repeatFrequency: RepeatFrequency.DAILY,
 
-    // allowWhileIdle = true → uses setExactAndAllowWhileIdle on Android,
-    // which fires the alarm even in Doze/power-save mode.
-    // Requires SCHEDULE_EXACT_ALARM (API 31-32) or USE_EXACT_ALARM (API 33+).
-    alarmManager: { allowWhileIdle: true },
+    // Omitting alarmManager uses Notifee's WorkManager scheduler on Android.
+    // Exact timing is only requested when Alarms & reminders access is granted.
+    ...(useExactAlarm
+      ? { alarmManager: { type: AlarmType.SET_EXACT_AND_ALLOW_WHILE_IDLE } }
+      : {}),
   };
 
   await notifee.createTriggerNotification(
