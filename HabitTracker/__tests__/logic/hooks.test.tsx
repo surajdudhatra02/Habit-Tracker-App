@@ -231,6 +231,40 @@ test('an empty progress response clears previously displayed success and trend',
   }).toEqual({ averageRate: 0, trend: 0 });
 });
 
+test('a missing backend function keeps the last successful progress and logs a readable error', async () => {
+  const days = [{ completion_rate: 100 }];
+  (supabase.rpc as jest.Mock).mockResolvedValueOnce({
+    data: days,
+    error: null,
+  });
+  await act(async () => {
+    renderer = TestRenderer.create(
+      <RangeProbe start={new Date(2026, 10, 1)} end={new Date(2026, 10, 2)} />,
+    );
+  });
+  const failure = {
+    code: 'PGRST202',
+    message:
+      'Could not find public.get_habit_completion_by_range with p_timezone',
+    hint: 'Reload the schema cache after creating the function',
+  };
+  (supabase.rpc as jest.Mock).mockResolvedValueOnce({
+    data: null,
+    error: failure,
+  });
+  await act(async () => {
+    await completion.refetch();
+  });
+  expect(completion.data).toEqual(days);
+  expect(completion.averageRate).toBe(100);
+  expect(completion.loading).toBe(false);
+  expect(completion.error).toEqual(failure);
+  expect(errorLog).toHaveBeenCalledWith(
+    expect.stringContaining('"code":"PGRST202"'),
+  );
+  expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('p_timezone'));
+});
+
 test('disabled exact alarms on Android 12 prompt the user to enable reminders', async () => {
   const PermissionProbe = () => {
     useNotificationPermission('alice');

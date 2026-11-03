@@ -5,12 +5,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
+  Platform,
+  Share,
 } from 'react-native';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { Button, Divider } from '../components';
-import { showInfoToast } from '../utils/toast';
+import { showErrorToast, showInfoToast } from '../utils/toast';
 import DeviceInfo from 'react-native-device-info';
 import { colors } from '../constants';
+import { PLAY_STORE_APP_URI, PLAY_STORE_URL } from '../constants/appLinks';
 import { useAuth, useAppUpdate } from '../hooks';
 import { Routes } from '../navigation/route';
 
@@ -25,6 +28,36 @@ const SettingsScreen = ({ navigation }: any) => {
     'User';
   const email = user?.email ?? '';
   const avatarLetter = displayName[0]?.toUpperCase() ?? '?';
+
+  const handleShareApp = async () => {
+    try {
+      await Share.share(
+        {
+          title: 'Habitz - Evolve Daily',
+          message: `Build better habits with Habitz!\n${PLAY_STORE_URL}`,
+        },
+        { dialogTitle: 'Share Habitz' },
+      );
+    } catch {
+      showErrorToast('Unable to share app', 'Please try again.');
+    }
+  };
+
+  const handleRateApp = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        try {
+          await Linking.openURL(PLAY_STORE_APP_URI);
+          return;
+        } catch {
+          // Devices without a Play Store handler can open the web listing.
+        }
+      }
+      await Linking.openURL(PLAY_STORE_URL);
+    } catch {
+      showErrorToast('Unable to open store', 'Please try again.');
+    }
+  };
 
   const rightIcon = (
     <MaterialDesignIcons name="menu-right" color={colors.grey_text} size={30} />
@@ -181,9 +214,9 @@ const SettingsScreen = ({ navigation }: any) => {
 
         <View className="bg-light_grey p-4 rounded-2xl">
           <TouchableOpacity
-            onPress={() =>
-              showInfoToast('Habitz', 'Coming soon on Google Play Store')
-            }
+            onPress={handleShareApp}
+            accessibilityRole="button"
+            accessibilityLabel="Share Habitz"
             activeOpacity={0.7}
           >
             <View className="flex-row items-center justify-between">
@@ -195,11 +228,13 @@ const SettingsScreen = ({ navigation }: any) => {
           <Divider />
 
           <TouchableOpacity
-            onPress={() => showInfoToast('Habitz', 'Coming soon on Play Store')}
+            onPress={handleRateApp}
+            accessibilityRole="button"
+            accessibilityLabel="Rate Habitz"
             activeOpacity={0.7}
           >
             <View className="flex-row items-center justify-between">
-              <Text className="text-off_white text-xl">Rate</Text>
+              <Text className="text-off_white text-xl">Rate App</Text>
               {rateIcon}
             </View>
           </TouchableOpacity>

@@ -87,7 +87,20 @@ export const useHabitCompletionRange = ({
       if (!isCurrent()) return;
       setResult(previous => ({ ...previous, loading: false, error }));
       showErrorToast('Unable to load progress', 'Please try again.');
-      console.error('Error fetching habit completion range:', error);
+      // React Native's console can collapse PostgREST errors to just "Object".
+      // Serialize the diagnostic fields without logging request IDs or tokens.
+      const diagnostic =
+        error && typeof error === 'object'
+          ? (error as Record<string, unknown>)
+          : { message: String(error) };
+      console.error(
+        `Error fetching habit completion range: ${JSON.stringify({
+          code: diagnostic.code,
+          message: diagnostic.message,
+          details: diagnostic.details,
+          hint: diagnostic.hint,
+        })}`,
+      );
     }
   }, [userId, startStr, endStr, scope, timezone]);
 
