@@ -1,13 +1,13 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './route';
+import { RootNavigatorParamList } from './route';
 import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
 import { useAuth } from '../hooks';
 import { ActivityIndicator, View } from 'react-native';
 import { colors } from '../constants';
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<RootNavigatorParamList>();
 
 const RootNavigator = () => {
   const { session, loading, isPasswordRecovery } = useAuth();

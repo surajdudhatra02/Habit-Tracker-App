@@ -5,7 +5,7 @@ import { colors } from '../constants';
 import CustomCheckbox from './CustomCheckbox';
 
 interface ReminderItemProps {
-  icon: string;
+  icon: React.ComponentProps<typeof MaterialDesignIcons>['name'];
   label: string;
   time: string;
   description?: string;

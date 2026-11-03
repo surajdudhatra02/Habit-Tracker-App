@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import {
   AuthorizationStatus,
   getMessaging,
@@ -11,74 +11,51 @@ import { supabase } from '../lib/supabase';
 import { showErrorToast } from '../utils/toast';
 
 export const useFCMToken = (userId: string | null) => {
-  const registeredRef = useRef(false);
-
   useEffect(() => {
-    if (!userId || registeredRef.current) return;
-
+    if (!userId) return;
+    let active = true;
     const messaging = getMessaging();
-
-    const registerToken = async () => {
-      try {
-        const authStatus = await requestPermission(messaging);
-
-        const enabled =
-          authStatus === AuthorizationStatus.AUTHORIZED ||
-          authStatus === AuthorizationStatus.PROVISIONAL;
-
-        if (!enabled) {
-          return;
-        }
-
-        const token = await getToken(messaging);
-
-        if (!token) {
-          return;
-        }
-
-        // Delete all existing tokens for this user on this platform first.
-        // Prevents stale token buildup when user re-logs in or reinstalls.
-        await supabase
-          .from('device_tokens')
-          .delete()
-          .eq('user_id', userId)
-          .eq('platform', Platform.OS);
-
-        const { error } = await supabase.from('device_tokens').insert({
+    const saveToken = async (token: string) => {
+      if (!active || !token) return;
+      // This key already identifies a single account/token pair. Never delete
+      // tokens by platform: other installations must remain registered.
+      const { error } = await supabase.from('device_tokens').upsert(
+        {
           user_id: userId,
           token,
           platform: Platform.OS,
           updated_at: new Date().toISOString(),
-        });
-
-        if (error) {
-          console.error('[FCM] Failed to save token to DB:', error.message);
-          showErrorToast(error.message, 'Error');
-        } else {
-          registeredRef.current = true;
-        }
-      } catch (err) {
-        console.error('[FCM] Error during token registration:', err);
-        showErrorToast(err?.message ?? 'Something went wrong', 'Error');
-      }
-    };
-
-    registerToken();
-
-    const unsubscribe = onTokenRefresh(messaging, async newToken => {
-      await supabase.from('device_tokens').upsert(
-        {
-          user_id: userId,
-          token: newToken,
-          platform: Platform.OS,
-          updated_at: new Date().toISOString(),
         },
-        {
-          onConflict: 'user_id, token',
-        },
+        { onConflict: 'user_id,token' },
       );
+      if (error) throw error;
+    };
+    const reportError = (error: unknown) => {
+      if (!active) return;
+      console.error('[FCM] Token registration failed:', error);
+      showErrorToast(
+        'Unable to register push notifications',
+        'Please reopen the app to retry.',
+      );
+    };
+    const register = async () => {
+      const permission = await requestPermission(messaging);
+      if (
+        !active ||
+        (permission !== AuthorizationStatus.AUTHORIZED &&
+          permission !== AuthorizationStatus.PROVISIONAL)
+      )
+        return;
+      const token = await getToken(messaging);
+      await saveToken(token);
+    };
+    const unsubscribe = onTokenRefresh(messaging, token => {
+      saveToken(token).catch(reportError);
     });
-
-    return () => unsubscribe();
+    register().catch(reportError);
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, [userId]);
 };

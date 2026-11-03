@@ -1,13 +1,16 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuthActions } from '../hooks';
-import { Routes } from '../navigation/route';
+import { AuthStackParamList, Routes } from '../navigation/route';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Button, Input } from '../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = ({
+  navigation,
+}: NativeStackScreenProps<AuthStackParamList, Routes.SignUp>) => {
   const { signUpWithEmail, loginWithGoogle } = useAuthActions();
 
   const [email, setEmail] = useState('');
@@ -50,8 +53,11 @@ const SignUpScreen = ({ navigation }) => {
       } else {
         showSuccessToast('Success', 'Account created successfully!');
       }
-    } catch (err: any) {
-      // console.log(err.message);
+    } catch (error) {
+      showErrorToast(
+        'Sign up failed',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,12 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button, Divider, Input, TimePicker } from '../components';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
+import { newHabitId } from '../utils/ids';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, Routes } from '../navigation/route';
@@ -20,6 +21,8 @@ type Props = NativeStackScreenProps<RootStackParamList, Routes.NewHabit>;
 const NewHabitScreen = ({ navigation, route }: Props) => {
   const existingHabit: Habit | undefined = route?.params?.habit;
   const isEditMode = !!existingHabit;
+  const createId = useRef<string | null>(null);
+  if (!isEditMode && !createId.current) createId.current = newHabitId();
 
   const createHabit = useHabitStore(s => s.createHabit);
   const updateHabit = useHabitStore(s => s.updateHabit);
@@ -33,28 +36,56 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [remindersLoading, setRemindersLoading] = useState(isEditMode);
+  const [reminderLoadFailed, setReminderLoadFailed] = useState(false);
+  const [reminderLoadAttempt, setReminderLoadAttempt] = useState(0);
 
   useEffect(() => {
+    let active = true;
     navigation.setOptions({
       title: isEditMode ? 'Edit Habit' : 'New Habit',
     });
 
     if (isEditMode) {
-      getHabitReminders(existingHabit!.id).then(data => {
-        setReminders(
-          data.map(r => ({
-            id: r.id,
-            time: (() => {
-              const [h, m] = r.reminder_time.split(':');
-              const d = new Date();
-              d.setHours(+h, +m, 0, 0);
-              return d;
-            })(),
-          })),
-        );
-      });
+      setRemindersLoading(true);
+      setReminderLoadFailed(false);
+      getHabitReminders(existingHabit!.id)
+        .then(data => {
+          if (!active) return;
+          setReminders(
+            data.map(r => ({
+              id: r.id,
+              time: (() => {
+                const [h, m] = r.reminder_time.split(':');
+                const d = new Date();
+                d.setHours(+h, +m, 0, 0);
+                return d;
+              })(),
+            })),
+          );
+        })
+        .catch(() => {
+          if (!active) return;
+          setReminderLoadFailed(true);
+          showErrorToast(
+            'Unable to load reminders',
+            'Retry before saving changes.',
+          );
+        })
+        .finally(() => {
+          if (active) setRemindersLoading(false);
+        });
     }
-  }, [getHabitReminders]);
+    return () => {
+      active = false;
+    };
+  }, [
+    getHabitReminders,
+    existingHabit,
+    isEditMode,
+    navigation,
+    reminderLoadAttempt,
+  ]);
 
   const handleAddReminder = () => setShowTimePicker(true);
 
@@ -87,6 +118,7 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
   };
 
   const validateAndSave = () => {
+    if (loading || remindersLoading || reminderLoadFailed) return;
     if (!habitName.trim()) {
       showErrorToast(
         'Validation Error',
@@ -110,31 +142,36 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
       const reminderTimes = reminders.map(r => formatTimeForDB(r.time));
 
       if (isEditMode) {
-        await updateHabit(existingHabit!.id, {
+        const result = await updateHabit(existingHabit!.id, {
           name: habitName.trim(),
-          description: description.trim() || undefined,
-          goal: goal.trim() || undefined,
+          description: description.trim() || null,
+          goal: goal.trim() || null,
           reminders: reminderTimes,
         });
-        showSuccessToast('Updated', 'Habit updated successfully!');
-
-        const updatedHabit = {
-          ...existingHabit,
-          name: habitName.trim(),
-          description: description.trim() || undefined,
-          goal: goal.trim() || undefined,
-          updated_at: new Date().toISOString(),
-        };
-        route.params?.onUpdate?.(updatedHabit);
+        if (result.remindersSynced)
+          showSuccessToast('Updated', 'Habit updated successfully!');
+        else
+          showErrorToast(
+            'Habit updated',
+            'Reminders could not be scheduled. Reopen the app to retry.',
+          );
+        route.params?.onUpdate?.(result.habit);
         navigation.goBack();
       } else {
-        await createHabit({
+        const result = await createHabit({
+          id: createId.current!,
           name: habitName.trim(),
           description: description.trim() || undefined,
           goal: goal.trim() || undefined,
           reminders: reminderTimes,
         });
-        showSuccessToast('Success', 'Habit created successfully!');
+        if (result.remindersSynced)
+          showSuccessToast('Success', 'Habit created successfully!');
+        else
+          showErrorToast(
+            'Habit saved',
+            'Reminders could not be scheduled. Reopen the app to retry.',
+          );
         navigation.goBack();
       }
     } catch (error: any) {
@@ -247,9 +284,16 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
             className="bg-light_green px-6 py-4 rounded-2xl mt-4"
             textClassName="text-black font-bold text-base"
             loading={loading}
+            disabled={remindersLoading || reminderLoadFailed}
             loadingColor={colors.black}
             onPress={validateAndSave}
           />
+          {reminderLoadFailed && (
+            <Button
+              text="Retry loading reminders"
+              onPress={() => setReminderLoadAttempt(attempt => attempt + 1)}
+            />
+          )}
         </View>
       </ScrollView>
     </>

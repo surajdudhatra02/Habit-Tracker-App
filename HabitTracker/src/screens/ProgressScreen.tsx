@@ -1,22 +1,30 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import { Button, CalendarComponent, ProgressCurveChart } from '../components';
+import { CalendarComponent, ProgressCurveChart } from '../components';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { colors } from '../constants';
 import { useHabitCompletionRange, CompletionDay } from '../hooks';
 import { getDateRange } from '../utils';
+import { getLocalDateString } from '../utils/dateUtils';
+import { useToday } from '../hooks/useToday';
 
 const ProgressScreen = () => {
   // --- Monthly Trend (last 30 days) ---
-  const { startDate, endDate } = useMemo(() => getDateRange(29), []);
+  const today = useToday();
+  const { startDate, endDate } = useMemo(
+    () => getDateRange(29, today),
+    [today],
+  );
 
-  const { data, averageRate, trend, loading } = useHabitCompletionRange({
-    startDate,
-    endDate,
-  });
+  const { data, averageRate, trend, loading, refetch } =
+    useHabitCompletionRange({
+      startDate,
+      endDate,
+      autoFetch: false,
+    });
 
   // --- Calendar (visible month) ---
-  const today = new Date();
   const [calMonth, setCalMonth] = useState({
     year: today.getFullYear(),
     month: today.getMonth() + 1,
@@ -28,14 +36,22 @@ const ProgressScreen = () => {
     return { calStartDate: start, calEndDate: end };
   }, [calMonth]);
 
-  const { data: calData } = useHabitCompletionRange({
+  const { data: calData, refetch: refetchCalendar } = useHabitCompletionRange({
     startDate: calStartDate,
     endDate: calEndDate,
+    autoFetch: false,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      refetchCalendar();
+    }, [refetch, refetchCalendar]),
+  );
 
   const markedDates = useMemo(() => {
     const result: Record<string, { marked: boolean; dotColor: string }> = {};
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateString(today);
     calData.forEach((d: CompletionDay) => {
       if (d.total_habits === 0) return; // no habits existed that day — skip
       if (d.day_date > todayStr) return; // future dates — never completed, skip
@@ -50,14 +66,7 @@ const ProgressScreen = () => {
       result[d.day_date] = { marked: true, dotColor };
     });
     return result;
-  }, [calData]);
-
-  const exportIcon = (
-    <MaterialDesignIcons name="download" color={colors.light_green} size={18} />
-  );
-  const shareIcon = (
-    <MaterialDesignIcons name="share" color={colors.black} size={18} />
-  );
+  }, [calData, today]);
 
   return (
     <ScrollView className="bg-dark_bg flex-1">

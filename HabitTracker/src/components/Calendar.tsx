@@ -1,5 +1,8 @@
 import { Calendar, DateData } from 'react-native-calendars';
+import React from 'react';
 import { colors } from '../constants';
+import { getLocalDateString } from '../utils/dateUtils';
+import { useToday } from '../hooks/useToday';
 
 interface MarkedDate {
   selected?: boolean;
@@ -17,8 +20,7 @@ const CalendarComponent = ({
   markedDates = {},
   onMonthChange,
 }: CalendarComponentProps) => {
-  const today = new Date();
-  const formattedToday = today.toISOString().split('T')[0];
+  const formattedToday = getLocalDateString(useToday());
 
   return (
     <Calendar

@@ -1,3 +1,4 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import {
   LoginScreen,
   SignUpScreen,
@@ -55,7 +56,7 @@ export const RouteScreens = {
 export type AuthStackParamList = {
   [Routes.Login]: undefined;
   [Routes.SignUp]: undefined;
-  [Routes.EmailConfirm]: undefined;
+  [Routes.EmailConfirm]: { email: string };
   [Routes.ForgotPassword]: undefined;
   [Routes.VerifyOtp]: { email: string };
   [Routes.ResetPassword]: undefined;
@@ -68,6 +69,7 @@ export type MainTabParamList = {
 };
 
 export type RootStackParamList = {
+  [Routes.Main]: NavigatorScreenParams<MainTabParamList> | undefined;
   [Routes.Home]: undefined;
   [Routes.Progress]: undefined;
   [Routes.Settings]: undefined;
@@ -81,4 +83,9 @@ export type RootStackParamList = {
   [Routes.Habits]: undefined;
   [Routes.HabitDetails]: { habit: import('../types').Habit };
   [Routes.ProfileInfo]: undefined;
+};
+
+export type RootNavigatorParamList = {
+  App: NavigatorScreenParams<RootStackParamList> | undefined;
+  Auth: NavigatorScreenParams<AuthStackParamList> | undefined;
 };

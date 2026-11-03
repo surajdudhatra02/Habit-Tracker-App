@@ -71,10 +71,23 @@ export const displayFromRemoteMessage = async (
 // The OS fires these even when the app is KILLED. No JS code runs to trigger
 // them — they are scheduled into the OS kernel at creation time.
 
+const REMINDER_PREFIX = 'habit-reminder-';
+
+// Serialize native mutations so logout cannot finish cancellation while an
+// earlier scheduling operation is still creating alarms.
+let reminderQueue: Promise<unknown> = Promise.resolve();
+const enqueueReminderOperation = <T>(
+  operation: () => Promise<T>,
+): Promise<T> => {
+  const result = reminderQueue.then(operation);
+  reminderQueue = result.catch(() => {});
+  return result;
+};
+
 const buildReminderId = (habitId: string, reminderTime: string): string => {
   // Normalize "08:00:00" → "0800", "08:00" → "0800"
   const normalized = reminderTime.substring(0, 5).replace(':', '');
-  return `habit-reminder-${habitId}-${normalized}`;
+  return `${REMINDER_PREFIX}${habitId}-${normalized}`;
 };
 
 // Calculates the timestamp of the next daily occurrence of HH:MM
@@ -141,12 +154,17 @@ export const scheduleHabitReminder = async (
 
 // Cancels ALL scheduled reminders for a given habit.
 
-export const cancelHabitReminders = async (habitId: string): Promise<void> => {
+const cancelHabitRemindersNow = async (habitId?: string): Promise<void> => {
   const allIds = await notifee.getTriggerNotificationIds();
-  const prefix = `habit-reminder-${habitId}-`;
+  const prefix = habitId ? `${REMINDER_PREFIX}${habitId}-` : REMINDER_PREFIX;
   const toCancel = allIds.filter(id => id.startsWith(prefix));
 
-  await Promise.all(toCancel.map(id => notifee.cancelTriggerNotification(id)));
+  // Wait for every native operation, including when one cancellation fails.
+  const results = await Promise.allSettled(
+    toCancel.map(id => notifee.cancelTriggerNotification(id)),
+  );
+  const failure = results.find(result => result.status === 'rejected');
+  if (failure?.status === 'rejected') throw failure.reason;
 
   // if (toCancel.length > 0) {
   //   console.log(
@@ -155,20 +173,29 @@ export const cancelHabitReminders = async (habitId: string): Promise<void> => {
   // }
 };
 
+export const cancelHabitReminders = (habitId: string): Promise<void> =>
+  enqueueReminderOperation(() => cancelHabitRemindersNow(habitId));
+
+// Enumerate the OS rather than the in-memory habit list, which can be empty
+// after restart or contain only part of the previous account's habits.
+export const cancelAllHabitReminders = (): Promise<void> =>
+  enqueueReminderOperation(() => cancelHabitRemindersNow());
+
 // Call on habit create and habit update.
-export const scheduleAllRemindersForHabit = async (
+export const scheduleAllRemindersForHabit = (
   habitId: string,
   habitName: string,
   reminderTimes: string[], // ["08:00", "18:30"]
-): Promise<void> => {
-  // Cancel existing reminders first to prevent duplicates
-  await cancelHabitReminders(habitId);
-
-  // Schedule each reminder time
-  await Promise.all(
-    reminderTimes.map(time => scheduleHabitReminder(habitId, habitName, time)),
-  );
-};
+  isCurrent: () => boolean = () => true,
+): Promise<void> =>
+  enqueueReminderOperation(async () => {
+    if (!isCurrent()) return;
+    await cancelHabitRemindersNow(habitId);
+    for (const time of new Set(reminderTimes)) {
+      if (!isCurrent()) return;
+      await scheduleHabitReminder(habitId, habitName, time);
+    }
+  });
 
 // ── Foreground Tap Handler ─────────────────────────────────────────────────────
 // Returns the habitId from a notification if it was a habit reminder tap.

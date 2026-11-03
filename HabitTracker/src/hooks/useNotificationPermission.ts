@@ -1,17 +1,22 @@
 import { useEffect, useRef } from 'react';
 import { Platform, Alert } from 'react-native';
-import notifee, { AuthorizationStatus } from '@notifee/react-native';
+import notifee, {
+  AndroidNotificationSetting,
+  AuthorizationStatus,
+} from '@notifee/react-native';
 
 export const useNotificationPermission = (userId: string | null) => {
   const checkedRef = useRef(false);
 
   useEffect(() => {
     if (!userId || checkedRef.current) return;
-    checkedRef.current = true;
+    let active = true;
 
     const requestPermissions = async () => {
       try {
         const settings = await notifee.requestPermission();
+        if (!active) return;
+        checkedRef.current = true;
 
         const granted =
           settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
@@ -22,12 +27,12 @@ export const useNotificationPermission = (userId: string | null) => {
           return;
         }
 
-        if (
-          Platform.OS === 'android' &&
-          (Platform.Version === 31 || Platform.Version === 32)
-        ) {
-          const alarmEnabled = await notifee.isAlarmPermissionGranted?.();
-          if (alarmEnabled === false) {
+        if (Platform.OS === 'android' && Number(Platform.Version) >= 31) {
+          const alarmSettings = await notifee.getNotificationSettings();
+          if (
+            active &&
+            alarmSettings.android.alarm === AndroidNotificationSetting.DISABLED
+          ) {
             Alert.alert(
               'Enable Exact Reminders',
               'To receive habit reminders at the exact time you set, enable Alarms & reminders for Habitz in Settings.',
@@ -35,7 +40,11 @@ export const useNotificationPermission = (userId: string | null) => {
                 { text: 'Not Now', style: 'cancel' },
                 {
                   text: 'Open Settings',
-                  onPress: () => notifee.openAlarmPermissionSettings(),
+                  onPress: () => {
+                    notifee.openAlarmPermissionSettings().catch(error => {
+                      console.error('Unable to open alarm settings:', error);
+                    });
+                  },
                 },
               ],
             );
@@ -47,5 +56,8 @@ export const useNotificationPermission = (userId: string | null) => {
     };
 
     requestPermissions();
+    return () => {
+      active = false;
+    };
   }, [userId]);
 };

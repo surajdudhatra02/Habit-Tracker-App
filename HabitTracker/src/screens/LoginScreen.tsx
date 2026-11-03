@@ -2,12 +2,15 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Popup } from '../components';
-import { Routes } from '../navigation/route';
+import { AuthStackParamList, Routes } from '../navigation/route';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuthActions } from '../hooks';
 import { validateEmail } from '../utils';
 import { showErrorToast } from '../utils/toast';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({
+  navigation,
+}: NativeStackScreenProps<AuthStackParamList, Routes.Login>) => {
   const { loginWithGoogle, loginWithEmail } = useAuthActions();
 
   const [email, setEmail] = useState('');

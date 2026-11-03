@@ -28,7 +28,10 @@ const Popup: React.FC<PopupProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const getIconConfig = () => {
+  const getIconConfig = (): {
+    name: React.ComponentProps<typeof MaterialDesignIcons>['name'];
+    color: string;
+  } => {
     switch (type) {
       case 'success':
         return { name: 'check-circle', color: colors.light_green };
@@ -74,12 +77,14 @@ const Popup: React.FC<PopupProps> = ({
               </Text>
 
               <View className="flex-row px-4 pb-4 gap-3">
-                <Button
-                  text={cancelText}
-                  className="border-2 border-light_grey px-6 py-4 rounded-2xl"
-                  textClassName="text-off_white font-bold text-base text-center"
-                  onPress={onCancel}
-                />
+                {showCancel && (
+                  <Button
+                    text={cancelText}
+                    className="border-2 border-light_grey px-6 py-4 rounded-2xl"
+                    textClassName="text-off_white font-bold text-base text-center"
+                    onPress={onCancel}
+                  />
+                )}
 
                 <Button
                   text={confirmText}

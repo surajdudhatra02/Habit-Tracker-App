@@ -18,6 +18,8 @@ import { colors } from '../constants';
 import { useHabitCompletionRange, useAuth } from '../hooks';
 import { getDateRange, getHabitIcon, daysSince } from '../utils';
 import { useHabitStore } from '../store';
+import { useToday } from '../hooks/useToday';
+import { showErrorToast } from '../utils/toast';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -33,7 +35,6 @@ const HomeScreen = ({ navigation }: Props) => {
     'User';
 
   const toTodayHabit = () => navigation.navigate(Routes.TodayHabits);
-  const toNewHabitScreen = () => navigation.navigate(Routes.NewHabit);
 
   const habits = useHabitStore(s => s.habits);
   const fetchHabits = useHabitStore(s => s.fetchHabits);
@@ -41,7 +42,8 @@ const HomeScreen = ({ navigation }: Props) => {
   const [completedTodayCount, setCompletedTodayCount] = useState(0);
 
   // Last 7 days — weekly count
-  const { startDate, endDate } = useMemo(() => getDateRange(6), []);
+  const today = useToday();
+  const { startDate, endDate } = useMemo(() => getDateRange(6, today), [today]);
 
   const {
     data,
@@ -51,6 +53,7 @@ const HomeScreen = ({ navigation }: Props) => {
   } = useHabitCompletionRange({
     startDate,
     endDate,
+    autoFetch: false,
   });
 
   const loadData = useCallback(async () => {
@@ -65,6 +68,7 @@ const HomeScreen = ({ navigation }: Props) => {
       }
     } catch (error) {
       console.error('Failed to load home screen data:', error);
+      showErrorToast('Unable to load habits', 'Please try again.');
     }
   }, [fetchHabits, getTodayCompletions, refetchRange]);
 

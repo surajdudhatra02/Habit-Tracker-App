@@ -3,11 +3,15 @@ import React, { useState } from 'react';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components';
-import { Routes } from '../navigation/route';
+import { AuthStackParamList, Routes } from '../navigation/route';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuthActions } from '../hooks';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
 
-const EmailConfirmationScreen = ({ navigation, route }) => {
+const EmailConfirmationScreen = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<AuthStackParamList, Routes.EmailConfirm>) => {
   const { email } = route.params;
   const { resendConfirmationEmail } = useAuthActions();
   const [loading, setLoading] = useState(false);

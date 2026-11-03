@@ -19,8 +19,15 @@ const HabitDetailsScreen = ({ route, navigation }: any) => {
 
   const loadReminders = useCallback(
     async (habitId?: string) => {
-      const data = await getHabitReminders(habitId || habit.id);
-      setReminders(data);
+      try {
+        const data = await getHabitReminders(habitId || habit.id);
+        setReminders(data);
+      } catch {
+        showErrorToast(
+          'Unable to load reminders',
+          'Please reopen this habit to retry.',
+        );
+      }
     },
     [getHabitReminders, habit.id],
   );

@@ -6,6 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SUPABASE_URL = Config.SUPABASE_URL;
 const SUPABASE_ANON_KEY = Config.SUPABASE_ANON_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error(
+    'Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY before building the app.',
+  );
+}
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: AsyncStorage,

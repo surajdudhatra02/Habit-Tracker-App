@@ -6,12 +6,15 @@ import { useHabitStore } from '../store';
 import { Habit } from '../types';
 import { colors } from '../constants';
 import { showErrorToast } from '../utils/toast';
+import { useToday } from '../hooks/useToday';
+import { getLocalDateString } from '../utils/dateUtils';
 
 const TodayHabitsScreen = () => {
   const habits = useHabitStore(s => s.habits);
   const fetchHabits = useHabitStore(s => s.fetchHabits);
   const getTodayCompletions = useHabitStore(s => s.getTodayCompletions);
   const toggleCompletion = useHabitStore(s => s.toggleCompletion);
+  const today = useToday();
 
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set());
@@ -26,6 +29,7 @@ const TodayHabitsScreen = () => {
         fetchHabits(),
         getTodayCompletions(),
       ]);
+      if (getLocalDateString(today) !== getLocalDateString()) return;
       setCompletedIds(new Set(completions.map(c => c.habit_id)));
     } catch (error) {
       console.error('Failed to load today habits screen data:', error);
@@ -33,7 +37,7 @@ const TodayHabitsScreen = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchHabits, getTodayCompletions]);
+  }, [fetchHabits, getTodayCompletions, today]);
 
   useFocusEffect(
     useCallback(() => {
@@ -134,9 +138,9 @@ const TodayHabitsScreen = () => {
                 <CheckboxCard
                   icon="repeat"
                   label={habit.name}
-                  description={habit.description}
+                  description={habit.description ?? undefined}
                   time="Daily"
-                  goal={habit.goal}
+                  goal={habit.goal ?? undefined}
                   checked={isCompleted}
                   onValueChange={value => handleToggle(habit.id, value)}
                 />

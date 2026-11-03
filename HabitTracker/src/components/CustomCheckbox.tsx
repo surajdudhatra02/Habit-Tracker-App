@@ -3,7 +3,12 @@ import React from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import { colors } from '../constants';
 
-const CustomCheckbox = ({ checked, onValueChange }) => {
+interface CustomCheckboxProps {
+  checked: boolean;
+  onValueChange: (value: boolean) => void;
+}
+
+const CustomCheckbox = ({ checked, onValueChange }: CustomCheckboxProps) => {
   return (
     <View>
       <CheckBox
