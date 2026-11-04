@@ -148,7 +148,7 @@ const HomeScreen = ({ navigation }: Props) => {
             <Text style={styles.greenText}>{'\n'}every day.</Text>
           </Text>
           <Text style={styles.subtitle}>
-            Hey {displayName.split(' ')[0]}, let’s make room for you.
+            Hey {displayName.split(' ')[0]}, let’s build better habits.
           </Text>
         </MotionView>
 

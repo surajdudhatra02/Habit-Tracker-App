@@ -1,19 +1,45 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants';
 
 const BrandLogo = ({ size = 28 }: { size?: number }) => (
-  <Text
-    style={[styles.wordmark, { fontSize: size, lineHeight: size * 1.25 }]}
+  <View
+    style={styles.container}
+    accessible
+    accessibilityRole="image"
     accessibilityLabel="Habitz"
   >
-    Habit<Text style={styles.accent}>z.</Text>
-  </Text>
+    <Image
+      source={require('../assets/habitz-icon.png')}
+      style={[
+        styles.icon,
+        { width: size * 1.5, height: size * 1.5, borderRadius: size * 0.4 },
+      ]}
+      accessible={false}
+    />
+    <Text
+      style={[styles.wordmark, { fontSize: size, lineHeight: size * 1.25 }]}
+      accessible={false}
+    >
+      Habitz
+    </Text>
+  </View>
 );
 
 const styles = StyleSheet.create({
-  wordmark: { color: colors.white, fontWeight: '400', letterSpacing: -1 },
-  accent: { color: colors.light_green, fontWeight: '700' },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  icon: {
+    resizeMode: 'contain',
+  },
+  wordmark: {
+    color: colors.white,
+    fontWeight: '600',
+    letterSpacing: -0.7,
+  },
 });
 
 export default BrandLogo;

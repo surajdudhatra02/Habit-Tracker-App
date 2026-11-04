@@ -10,8 +10,17 @@ import notifee, {
 import type { TimestampTrigger } from '@notifee/react-native';
 import { Platform } from 'react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { colors } from '../constants/colors';
 
 export const NOTIFICATION_CHANNEL_ID = 'habitz_default';
+
+// The status icon must be monochrome with a transparent background. Keep the
+// full-color brand artwork separate for notification layouts with a large icon.
+const androidBranding = {
+  smallIcon: 'ic_stat_habitz',
+  largeIcon: 'ic_habitz_notification_large',
+  color: colors.light_green,
+};
 
 export const createNotificationChannel = async (): Promise<void> => {
   if (Platform.OS !== 'android') return;
@@ -57,6 +66,7 @@ export const displayFromRemoteMessage = async (
     body: body ?? '',
     data: remoteMessage.data,
     android: {
+      ...androidBranding,
       channelId: NOTIFICATION_CHANNEL_ID,
       importance: AndroidImportance.HIGH,
       pressAction: { id: 'default' },
@@ -147,6 +157,7 @@ export const scheduleHabitReminder = async (
       body: 'Time to complete your habit for today!',
       data: { habitId, type: 'habit_reminder' },
       android: {
+        ...androidBranding,
         channelId: NOTIFICATION_CHANNEL_ID,
         importance: AndroidImportance.HIGH,
         pressAction: { id: 'default' },

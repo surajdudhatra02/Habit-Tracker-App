@@ -256,7 +256,7 @@ const NewHabitScreen = ({ navigation, route }: Props) => {
           </View>
           <View>
             <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-off_white text-sm font-semibold">
+              <Text className="flex-1 mr-3 text-off_white text-sm font-semibold">
                 Your why
               </Text>
               <Text className="text-grey_text text-xs">Optional</Text>

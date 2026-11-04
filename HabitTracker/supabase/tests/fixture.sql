@@ -1,6 +1,7 @@
 -- Disposable local database only. Mirrors the schema supplied on 2026-11-03.
 create role authenticated nologin;
 create role anon nologin;
+create role service_role nologin bypassrls;
 create schema auth;
 create table auth.users (id uuid primary key);
 create function auth.uid() returns uuid language sql stable as $$
